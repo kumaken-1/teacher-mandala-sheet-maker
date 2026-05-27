@@ -1,0 +1,2754 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教師用マンダラシートメーカー</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --text: #25312c;
+      --muted: #66746d;
+      --line: #d7ded8;
+      --primary: #1f6f5b;
+      --primary-soft: #e1f0eb;
+      --accent: #a45f2a;
+      --accent-soft: #f6eadf;
+      --warn: #fff6dc;
+      --shadow: 0 12px 28px rgba(37, 49, 44, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 18px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: grid;
+      gap: 2px;
+      min-width: 240px;
+    }
+
+    .brand strong {
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-left: 10px;
+      border-left: 1px solid var(--line);
+    }
+
+    .tool-group:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .tool-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .btn {
+      position: relative;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 0 12px;
+      font-weight: 800;
+    }
+
+    .btn[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      z-index: 90;
+      width: max-content;
+      max-width: min(260px, 80vw);
+      transform: translateX(-50%) translateY(4px);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 8px;
+      background: rgba(37, 49, 44, .96);
+      color: #fff;
+      padding: 7px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+      white-space: normal;
+      box-shadow: 0 10px 24px rgba(37, 49, 44, .22);
+      transition: opacity .12s ease, transform .12s ease;
+    }
+
+    .btn[data-tooltip]::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 3px);
+      z-index: 91;
+      transform: translateX(-50%);
+      opacity: 0;
+      pointer-events: none;
+      border: 5px solid transparent;
+      border-top-color: rgba(37, 49, 44, .96);
+      transition: opacity .12s ease;
+    }
+
+    .btn[data-tooltip]:hover::after,
+    .btn[data-tooltip]:focus-visible::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .btn[data-tooltip]:hover::before,
+    .btn[data-tooltip]:focus-visible::before {
+      opacity: 1;
+    }
+
+    .app-header .btn[data-tooltip]::after {
+      top: calc(100% + 8px);
+      bottom: auto;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .app-header .btn[data-tooltip]::before {
+      top: calc(100% + 3px);
+      bottom: auto;
+      border-top-color: transparent;
+      border-bottom-color: rgba(37, 49, 44, .96);
+    }
+
+    .app-header .btn[data-tooltip]:hover::after,
+    .app-header .btn[data-tooltip]:focus-visible::after {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn.accent {
+      background: var(--accent-soft);
+      border-color: #ddb98f;
+      color: #714016;
+    }
+
+    .btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: .52;
+    }
+
+    .manual-btn {
+      border-color: #b8c7c0;
+      background: #eef5f2;
+    }
+
+    .btn:focus-visible,
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 111, 91, .16);
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .workspace,
+    .side {
+      min-width: 0;
+    }
+
+    .workspace {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .canvas-panel,
+    .side-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label,
+    .field-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 9px 10px;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .canvas-panel {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .view-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .view-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .view-title h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .view-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .grid {
+      display: grid;
+      gap: 6px;
+      margin: 0 auto;
+      width: min(100%, 760px);
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.nine {
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 3px;
+      width: min(100%, 980px);
+    }
+
+    .tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      align-content: center;
+      text-align: center;
+      min-width: 0;
+      color: var(--text);
+    }
+
+    .tile.big {
+      min-height: 148px;
+    }
+
+    .tile.has-open {
+      padding-top: 42px;
+    }
+
+    .tile-id {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      max-width: calc(100% - 16px);
+      border-radius: 6px;
+      background: rgba(255,255,255,.86);
+      color: #25312c;
+      padding: 3px 6px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .tile-count {
+      margin-left: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      opacity: .72;
+    }
+
+    .tile-hint {
+      margin-left: 5px;
+      color: #4f5d56;
+      font-size: 10px;
+      font-weight: 800;
+      opacity: .68;
+    }
+
+    .tile.theme .tile-id,
+    .tile.block .tile-id {
+      background: rgba(255,255,255,.9);
+      color: #25312c;
+    }
+
+    .tile.block .tile-count {
+      color: #25312c;
+    }
+
+    .tile.block .tile-hint {
+      color: #25312c;
+    }
+
+    .tile.theme {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .tile.block {
+      background: var(--block-color, var(--primary-soft));
+      border-color: var(--block-border, #9cc8bd);
+      color: #fff;
+    }
+
+    .tile.cell {
+      background: var(--block-soft, #fffef8);
+      border-color: var(--block-border, var(--line));
+    }
+
+    .tile.selected {
+      box-shadow: 0 0 0 3px rgba(31, 111, 91, .28);
+      z-index: 2;
+    }
+
+    .tile.arrange-source {
+      box-shadow: 0 0 0 3px rgba(164, 95, 42, .35);
+      border-color: var(--accent);
+    }
+
+    .tile.can-drag {
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      border-color: #c98745;
+      box-shadow: inset 0 0 0 2px rgba(164, 95, 42, .18);
+    }
+
+    .tile.can-drag:active {
+      cursor: grabbing;
+    }
+
+    .tile.can-drag textarea {
+      pointer-events: none;
+    }
+
+    .tile.drag-over {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(164, 95, 42, .22);
+      transform: translateY(-2px);
+    }
+
+    .tile.is-pointer-dragging {
+      opacity: .72;
+      transform: scale(.985);
+    }
+
+    .tile textarea {
+      min-height: 0;
+      height: 100%;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      resize: none;
+      text-align: center;
+      padding: 8px;
+      overflow: hidden;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .tile.theme textarea {
+      color: #fff;
+    }
+
+    .tile.block textarea {
+      color: #fff;
+    }
+
+    .tile.theme textarea::placeholder {
+      color: rgba(255,255,255,.72);
+    }
+
+    .tile.block textarea::placeholder {
+      color: rgba(255,255,255,.76);
+    }
+
+    .tile-actions {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      z-index: 3;
+    }
+
+    .mini-btn {
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tile.block .mini-btn {
+      border-color: rgba(255,255,255,.42);
+      background: rgba(255,255,255,.92);
+    }
+
+    .tile.block .mini-btn:hover,
+    .tile.block .mini-btn:focus-visible {
+      background: #fff;
+      border-color: rgba(37, 49, 44, .32);
+    }
+
+    .grid.nine .tile {
+      border-radius: 5px;
+      padding: 3px;
+      transition: box-shadow .14s ease, transform .14s ease;
+    }
+
+    .grid.nine .tile textarea {
+      padding: 4px;
+      font-size: clamp(10px, 1.05vw, 13px);
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .grid.nine .tile textarea {
+      color: inherit;
+      -webkit-text-fill-color: currentColor;
+    }
+
+    .grid.nine .tile:focus-within {
+      z-index: 8;
+      transform: scale(1.5);
+      box-shadow: 0 10px 28px rgba(37, 49, 44, .22);
+    }
+
+    .grid.nine .tile:focus-within textarea {
+      overflow: auto;
+      background: rgba(255,255,255,.16);
+    }
+
+    .grid.nine .tile-actions {
+      display: none;
+    }
+
+    .side {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      position: sticky;
+      top: 74px;
+      max-height: calc(100vh - 88px);
+      overflow: auto;
+    }
+
+    .side-panel {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .hidden-controls {
+      display: none;
+    }
+
+    .side-panel h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .side-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .load-group {
+      display: grid;
+      gap: 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .load-group:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .load-group h3 {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .paste-input {
+      min-height: 132px;
+      font-size: 12px;
+    }
+
+    .status {
+      border: 1px solid #ead4a5;
+      border-radius: 8px;
+      background: var(--warn);
+      color: #604512;
+      padding: 9px 10px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .identity-panel {
+      display: grid;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .identity-panel strong {
+      color: var(--text);
+    }
+
+    .progress {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5eae6;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width .2s ease;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .arrange-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #ddb98f;
+      border-radius: 8px;
+      background: #fff7ed;
+      color: #714016;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .arrange-banner.show {
+      display: flex;
+    }
+
+    .arrange-banner::before {
+      content: "配置換え中";
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #a45f2a;
+      color: #fff;
+      padding: 3px 8px;
+      font-size: 11px;
+    }
+
+    .file-input {
+      font-size: 12px;
+      padding: 7px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 40;
+      transform: translateX(-50%) translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 999px;
+      background: rgba(37, 49, 44, .95);
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 13px;
+      transition: opacity .18s, transform .18s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .manual-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(37, 49, 44, .46);
+    }
+
+    .manual-overlay.open {
+      display: flex;
+    }
+
+    .manual-dialog {
+      width: min(920px, 100%);
+      max-height: min(86vh, 780px);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(37, 49, 44, .28);
+    }
+
+    .manual-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .manual-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .manual-body {
+      overflow: auto;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .manual-section {
+      display: grid;
+      gap: 8px;
+    }
+
+    .manual-section h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .manual-section p,
+    .manual-section li {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .manual-section ol,
+    .manual-section ul {
+      margin: 0;
+      padding-left: 1.35em;
+      display: grid;
+      gap: 6px;
+    }
+
+    .manual-term {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .guide-options,
+    .guide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .guide-preview {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .guide-preview li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+      color: var(--text);
+      padding: 6px;
+      font-weight: 800;
+    }
+
+    .guide-preview label {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .guide-preview input {
+      padding: 6px 8px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .guide-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    body.print-view {
+      background: #fff;
+    }
+
+    body.print-view .app-header,
+    body.print-view .side,
+    body.print-view .view-head,
+    body.print-view .manual-overlay,
+    body.print-view .toast {
+      display: none;
+    }
+
+    body.print-view .shell {
+      display: block;
+      max-width: none;
+      padding: 0;
+    }
+
+    body.print-view .canvas-panel {
+      box-shadow: none;
+      border: 0;
+      padding: 0;
+    }
+
+    body.print-view .grid.nine {
+      width: min(100%, 185mm);
+      gap: 2px;
+    }
+
+    body.print-view .grid.three {
+      width: min(100%, 180mm);
+      gap: 3mm;
+    }
+
+    body.print-view .grid.three .tile {
+      min-height: 52mm;
+    }
+
+    body.print-view .grid.nine .tile:focus-within {
+      transform: none;
+      box-shadow: none;
+    }
+
+    body.print-view .tile {
+      break-inside: avoid;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-header,
+      .view-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .shell {
+        padding: 10px;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .tool-group {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .tile {
+        border-radius: 5px;
+        padding: 4px;
+      }
+
+      .tile.big {
+        min-height: 108px;
+      }
+
+      .tile textarea {
+        padding: 4px;
+        font-size: 12px;
+      }
+
+      .grid.nine .tile:focus-within {
+        transform: scale(1.22);
+      }
+
+      .guide-preview {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .app-header,
+      .side,
+      .view-head,
+      .manual-overlay,
+      .toast {
+        display: none !important;
+      }
+
+      .shell {
+        display: block;
+        max-width: none;
+        padding: 0;
+      }
+
+      .canvas-panel {
+        box-shadow: none;
+        border: 0;
+        padding: 0;
+      }
+
+      .grid.nine {
+        width: min(100%, 185mm);
+        gap: 2px;
+      }
+
+      .grid.three {
+        width: min(100%, 180mm);
+        gap: 3mm;
+      }
+
+      .grid.three .tile {
+        min-height: 52mm;
+      }
+
+      .grid.nine .tile {
+        padding: 2mm;
+      }
+
+      .grid.nine .tile textarea {
+        padding: 1mm;
+        font-size: 8.5pt;
+      }
+
+      .tile-id {
+        top: 1.5mm;
+        left: 1.5mm;
+        font-size: 7pt;
+        padding: 1mm 1.5mm;
+      }
+
+      .grid.nine .tile:focus-within {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .tile {
+        break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .tile textarea {
+        color: inherit;
+        -webkit-text-fill-color: currentColor;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <strong>教師用マンダラシートメーカー</strong>
+      <span>3×3で構造を作り、9×9で全体を整える</span>
+    </div>
+    <div class="toolbar" aria-label="操作ボタン">
+      <div class="tool-group" aria-label="表示切替">
+        <span class="tool-label">表示</span>
+        <button class="btn active" id="structureModeBtn" type="button" data-tooltip="大マンダラと小マンダラを3×3で編集します。">3×3編集</button>
+        <button class="btn" id="wholeModeBtn" type="button" data-tooltip="9×9の全体を見ながら確認・微修正します。">9×9全体</button>
+      </div>
+      <div class="tool-group" aria-label="編集">
+        <span class="tool-label">編集</span>
+        <button class="btn" id="undoBtn" type="button" disabled data-tooltip="直前の変更を1つだけ戻します。">戻す</button>
+        <button class="btn" id="redoBtn" type="button" disabled data-tooltip="戻した直後の変更を1つだけ進めます。">進む</button>
+      </div>
+      <div class="tool-group" aria-label="出力">
+        <span class="tool-label">出力</span>
+        <button class="btn primary" id="copySheetBtn" type="button" data-tooltip="Googleスプレッドシートに貼れる形でコピーします。">スプシにコピー</button>
+        <button class="btn" id="printBtn" type="button" data-tooltip="大マンダラ・小マンダラ・9×9全体から対象を選んで印刷します。">印刷</button>
+      </div>
+      <div class="tool-group" aria-label="保存と管理">
+        <span class="tool-label">保存</span>
+        <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
+        <button class="btn" id="resetBtn" type="button" data-tooltip="入力内容と配置を初期状態に戻します。">初期化</button>
+      </div>
+      <div class="tool-group" aria-label="ヘルプ">
+        <span class="tool-label">ヘルプ</span>
+        <button class="btn manual-btn" id="manualBtn" type="button" data-tooltip="使い方と考え方の説明を開きます。">マニュアル</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="workspace">
+      <div class="canvas-panel">
+        <div class="view-head">
+          <div class="view-title">
+            <h1 id="viewTitle">大マンダラ</h1>
+            <p id="viewLead">中央テーマと周囲8つの小マンダラを配置します。</p>
+          </div>
+          <div class="button-row">
+            <button class="btn accent" id="arrangeBtn" type="button" data-tooltip="小マンダラやセルの配置をドラッグまたはクリック2回で入れ替えます。">配置換え</button>
+            <button class="btn" id="backBtn" type="button" hidden data-tooltip="開いている小マンダラから大マンダラへ戻ります。">大マンダラへ戻る</button>
+          </div>
+        </div>
+        <div class="arrange-banner" id="arrangeStatus" role="status" aria-live="polite"></div>
+        <div id="grid" class="grid three"></div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="side-panel">
+        <h2>読み込み</h2>
+        <p>JSONは配置やヒントまで復元します。スプシ貼り付けは、表に見えている9×9の内容を取り込みます。</p>
+        <div class="load-group">
+          <h3>JSONファイル</h3>
+          <input class="file-input" id="importJsonInput" type="file" accept="application/json,.json">
+        </div>
+        <div class="load-group">
+          <h3>スプシ貼り付け</h3>
+          <textarea class="paste-input" id="sheetPasteInput" placeholder="GoogleスプレッドシートやExcelで範囲をコピーして、ここに貼り付けます。"></textarea>
+          <button class="btn" id="importSheetPasteBtn" type="button" data-tooltip="貼り付けた9×9または11×11の表から、セルの文字を読み込みます。">貼り付け内容を読み込む</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="hidden-controls" aria-hidden="true">
+    <h2 id="editorTitle">選択中</h2>
+    <p id="editorLead"></p>
+    <div id="identityPanel"></div>
+    <input id="selectedTitle" type="text">
+    <textarea id="selectedNote"></textarea>
+    <p id="saveStatus"></p>
+    <div><span id="progressFill"></span></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="manual-overlay" id="manualPanel" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+    <div class="manual-dialog">
+      <div class="manual-head">
+        <h2 id="manualTitle">マニュアル</h2>
+        <button class="btn" id="manualCloseBtn" type="button" data-tooltip="マニュアルを閉じます。">閉じる</button>
+      </div>
+      <div class="manual-body">
+        <section class="manual-section">
+          <h3>このアプリの考え方</h3>
+          <p>教師用マンダラシートメーカーは、テンプレートを埋める道具ではありません。大マンダラで考える入口を並べ、小マンダラで1つずつ深め、必要に応じて配置を変えながら、自分の思考を見える形にする道具です。</p>
+          <p>ガイドは答えではなく「ヒント」です。本文には入りません。元番地の横に薄く表示されるので、それを見ながら自分の言葉でセルに書きます。</p>
+        </section>
+        <section class="manual-section">
+          <h3>最短の使い方</h3>
+          <ol>
+            <li>大マンダラ中央に、考えたいテーマを書きます。</li>
+            <li>必要なら中央の「用途」または「発想」を押し、周囲8セルにヒントを表示します。</li>
+            <li>ヒントを見ながら、周囲8セルに自分の言葉で入口を書きます。</li>
+            <li>入口セルの「開く」を押し、小マンダラへ移動します。</li>
+            <li>小マンダラ中央の「観点」または「発想」でヒントを出し、周囲8セルに具体案を書きます。</li>
+            <li>「9×9全体」で全体を俯瞰し、つながりや抜けを確認します。</li>
+            <li>必要なら「配置換え」で並びを変え、「スプシにコピー」や「ファイル保存」で残します。</li>
+          </ol>
+        </section>
+        <section class="manual-section">
+          <h3>4つのガイド</h3>
+          <p>ガイドは4種類あります。おすすめ順は出しません。組み合わせは教師自身が判断します。</p>
+          <ul>
+            <li><span class="manual-term">大マンダラの用途</span>: 何について考えるかを決める入口です。授業づくり、学級経営、校務整理、実践の省察、インプット学習、レポート作成などがあります。</li>
+            <li><span class="manual-term">大マンダラの発想</span>: 全体をどう分けるかを考えるヒントです。目的、対象、時間、場面、課題、関係者などで分けられます。</li>
+            <li><span class="manual-term">小マンダラの観点</span>: 1つの入口を具体化するヒントです。授業の観点、学級経営の観点、実行計画、省察、文章化などがあります。</li>
+            <li><span class="manual-term">小マンダラの発想</span>: 1つの入口をさらに広げるヒントです。視点をずらす、制約を変える、価値から見る、実務に落とす、文章にするなどがあります。</li>
+          </ul>
+        </section>
+        <section class="manual-section">
+          <h3>ヒントの反映方法</h3>
+          <ul>
+            <li><span class="manual-term">ヒントがない所だけ表示</span>: すでにヒントがあるセルはそのままにし、空いているセルだけにヒントを出します。</li>
+            <li><span class="manual-term">ヒントをすべて更新</span>: 8つのヒントを、いま選んでいる候補でまとめて置き換えます。</li>
+            <li><span class="manual-term">候補の編集</span>: 反映前に8つの候補を書き換えられます。編集はその場だけで、定型候補そのものは壊れません。</li>
+          </ul>
+        </section>
+        <section class="manual-section">
+          <h3>使い分けの例</h3>
+          <ul>
+            <li><span class="manual-term">授業づくり</span>: 大マンダラの「用途」で授業づくりの入口を出し、小マンダラでは「授業の観点」や「発想」を使って各入口を深めます。</li>
+            <li><span class="manual-term">実践の省察</span>: 大マンダラの「用途」で実践の省察を選び、小マンダラでは「省察」や「価値から見る」を使って、事実、意味づけ、次の一手へ進めます。</li>
+            <li><span class="manual-term">インプット学習</span>: 本や動画、研修で得た内容を、大マンダラで要点や疑問に分け、小マンダラで「インプット整理」や「実務に落とす」を使って自分の実践につなげます。</li>
+            <li><span class="manual-term">レポート作成</span>: 大マンダラでテーマ、背景、目的、見えたことなどを整理し、小マンダラで「文章化」や「文章にする」を使って書く材料をそろえます。</li>
+          </ul>
+        </section>
+        <section class="manual-section">
+          <h3>配置換えと元番地</h3>
+          <p>「配置換え」を押すと、大マンダラの入口や小マンダラ内セルを入れ替えられます。ドラッグで動かすか、移動元と移動先をクリックします。元番地の「①」「①-1」などは、最初の場所を示す目印です。配置換えをしても変わりません。</p>
+        </section>
+        <section class="manual-section">
+          <h3>画面と編集</h3>
+          <ul>
+            <li><span class="manual-term">3×3編集</span>: 大マンダラや小マンダラを1つずつ考える画面です。構造づくりと配置換えに向いています。</li>
+            <li><span class="manual-term">9×9全体</span>: 全体を俯瞰する画面です。大きな入力より、確認や微修正に向いています。</li>
+            <li><span class="manual-term">戻す / 進む</span>: 直前の変更を1つだけ戻す・進める機能です。長い履歴は保存しません。</li>
+          </ul>
+        </section>
+        <section class="manual-section">
+          <h3>保存と出力</h3>
+          <ul>
+            <li><span class="manual-term">自動保存</span>: 同じ端末・同じブラウザでは、前回の続きから始められます。これは一時的な保険です。</li>
+            <li><span class="manual-term">ファイル保存</span>: 正式に残すときに使います。JSONファイルとして保存し、読み込みから復元できます。</li>
+            <li><span class="manual-term">読み込み</span>: JSONは配置やヒントまで復元します。スプシ貼り付けは、表に見えている9×9の文字を取り込みます。</li>
+            <li><span class="manual-term">スプシにコピー</span>: 印刷・共有の主ルートです。GoogleスプレッドシートのA1セルへ貼り付けて整えます。</li>
+            <li><span class="manual-term">印刷</span>: 大マンダラだけ、小マンダラだけ、9×9全体を選んで直接印刷できます。ブラウザ印刷は補助機能です。</li>
+          </ul>
+        </section>
+        <section class="manual-section">
+          <h3>迷ったとき</h3>
+          <ul>
+            <li>最初から自由に作りたいときは、大マンダラの「用途」で「無地」を選びます。</li>
+            <li>ヒントが多すぎると感じたら、「ヒントをすべて更新」ではなく「ヒントがない所だけ表示」を使います。</li>
+            <li>本文に何を書くか迷ったら、ヒントをそのまま写さず、「自分の言葉ならどう言うか」を考えます。</li>
+            <li>全体が散らかったら、9×9全体で眺めてから、3×3編集に戻って配置換えします。</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="manual-overlay" id="guidePanel" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="manual-dialog">
+      <div class="manual-head">
+        <h2 id="guideTitle">ガイド</h2>
+        <button class="btn" id="guideCloseBtn" type="button" data-tooltip="ガイドを閉じます。">閉じる</button>
+      </div>
+      <div class="manual-body">
+        <section class="manual-section">
+          <h3 id="guideLead">候補を選んでください</h3>
+          <p class="guide-note" id="guideNote">候補は考え始めるための足場です。反映後も自由に書き換えられます。</p>
+          <div class="guide-options" id="guideOptions"></div>
+        </section>
+        <section class="manual-section">
+          <h3>入る候補（編集できます）</h3>
+          <ul class="guide-preview" id="guidePreview"></ul>
+        </section>
+        <section class="manual-section">
+          <h3>反映方法</h3>
+          <div class="guide-actions">
+            <button class="btn primary" id="guideFillEmptyBtn" type="button" data-tooltip="まだヒントがないセルだけに、候補をヒントとして表示します。">ヒントがない所だけ表示</button>
+            <button class="btn" id="guideReplaceAllBtn" type="button" data-tooltip="8つのヒントを、いまの候補でまとめて更新します。">ヒントをすべて更新</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="manual-overlay" id="printPanel" role="dialog" aria-modal="true" aria-labelledby="printTitle">
+    <div class="manual-dialog">
+      <div class="manual-head">
+        <h2 id="printTitle">印刷するものを選ぶ</h2>
+        <button class="btn" id="printCloseBtn" type="button" data-tooltip="印刷対象の選択を閉じます。">閉じる</button>
+      </div>
+      <div class="manual-body">
+        <section class="manual-section">
+          <h3>対象</h3>
+          <div class="guide-actions">
+            <button class="btn" id="printBigBtn" type="button" data-tooltip="大マンダラの3×3だけを印刷します。">大マンダラだけ</button>
+            <button class="btn" id="printSmallBtn" type="button" data-tooltip="現在開いている小マンダラだけを印刷します。">いまの小マンダラ</button>
+            <button class="btn primary" id="printWholeBtn" type="button" data-tooltip="9×9の全体を印刷します。">9×9全体</button>
+          </div>
+          <p class="guide-note" id="printNote">ブラウザ印刷は補助機能です。配布・共有には「スプシにコピー」も使えます。</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "teacher_mandala_state_v1";
+    const POSITIONS_3X3 = [
+      "topLeft", "top", "topRight",
+      "left", "center", "right",
+      "bottomLeft", "bottom", "bottomRight"
+    ];
+    const OUTER_POSITIONS = POSITIONS_3X3.filter(position => position !== "center");
+    const POSITION_LABELS = {
+      topLeft: "左上",
+      top: "上",
+      topRight: "右上",
+      left: "左",
+      center: "中央",
+      right: "右",
+      bottomLeft: "左下",
+      bottom: "下",
+      bottomRight: "右下"
+    };
+    const BLOCK_NUMERALS = ["⑧", "①", "②", "③", "④", "⑤", "⑥", "⑦"];
+    const POSITION_OFFSETS = {
+      topLeft: { row: 0, col: 0 },
+      top: { row: 0, col: 1 },
+      topRight: { row: 0, col: 2 },
+      left: { row: 1, col: 0 },
+      center: { row: 1, col: 1 },
+      right: { row: 1, col: 2 },
+      bottomLeft: { row: 2, col: 0 },
+      bottom: { row: 2, col: 1 },
+      bottomRight: { row: 2, col: 2 }
+    };
+    const BLOCK_BASES = {
+      topLeft: { row: 0, col: 0 },
+      top: { row: 0, col: 3 },
+      topRight: { row: 0, col: 6 },
+      left: { row: 3, col: 0 },
+      right: { row: 3, col: 6 },
+      bottomLeft: { row: 6, col: 0 },
+      bottom: { row: 6, col: 3 },
+      bottomRight: { row: 6, col: 6 }
+    };
+    const BLOCK_PALETTES = [
+      { color: "#8a6d3b", soft: "#f5eedc", border: "#d8c48f", ring: "rgba(138, 109, 59, .20)" },
+      { color: "#2f80ed", soft: "#eaf3ff", border: "#b7d7ff", ring: "rgba(47, 128, 237, .18)" },
+      { color: "#2f9e44", soft: "#eaf8ee", border: "#b8e3c1", ring: "rgba(47, 158, 68, .18)" },
+      { color: "#f08c00", soft: "#fff3df", border: "#ffd39a", ring: "rgba(240, 140, 0, .20)" },
+      { color: "#9c36b5", soft: "#f6eafe", border: "#dfbaf0", ring: "rgba(156, 54, 181, .18)" },
+      { color: "#0b7285", soft: "#e6f7fa", border: "#acdfe8", ring: "rgba(11, 114, 133, .18)" },
+      { color: "#e03131", soft: "#fff0f0", border: "#ffc1c1", ring: "rgba(224, 49, 49, .18)" },
+      { color: "#5f3dc4", soft: "#f0ecff", border: "#cabdff", ring: "rgba(95, 61, 196, .18)" }
+    ];
+    const GUIDE_SETS = {
+      bigUse: [
+        { name: "授業づくり", items: ["単元目標", "児童の実態", "導入", "中心発問", "活動", "板書", "評価", "支援"] },
+        { name: "学級経営", items: ["生活", "学習", "係活動", "当番", "人間関係", "保護者連携", "行事", "個別支援"] },
+        { name: "校務整理", items: ["議題", "資料", "役割", "期限", "確認事項", "未決定", "共有先", "次回まで"] },
+        { name: "研修企画", items: ["ねらい", "対象", "時間配分", "体験活動", "資料", "事例", "留意点", "次の一手"] },
+        { name: "実践の省察", items: ["実践場面", "児童の姿", "うまくいったこと", "うまくいかなかったこと", "自分の関わり", "見えてきた問い", "次に試すこと", "学びたいこと"] },
+        { name: "インプット学習", items: ["要点", "気づき", "疑問", "実践との接点", "試したいこと", "子どもの学びへの影響", "共有したいこと", "次に学ぶこと"] },
+        { name: "レポート作成", items: ["テーマ", "背景", "目的", "実践・事例", "見えたこと", "考察", "課題", "まとめ"] },
+        { name: "無地", items: ["", "", "", "", "", "", "", ""] }
+      ],
+      bigIdea: [
+        { name: "全体を分ける", items: ["目的で分ける", "対象で分ける", "時間で分ける", "場面で分ける", "課題で分ける", "関係者で分ける", "成果物で分ける", "次の行動で分ける"] },
+        { name: "関係で分ける", items: ["原因", "結果", "条件", "比較", "優先順位", "役割", "リスク", "支援"] },
+        { name: "流れで分ける", items: ["前提", "準備", "導入", "展開", "確認", "共有", "振り返り", "次の一手"] }
+      ],
+      smallPerspective: [
+        { name: "具体化", items: ["目的", "現状", "手順", "準備物", "反応", "つまずき", "支援", "評価"] },
+        { name: "授業の観点", items: ["問い", "活動", "対話", "板書", "ICT", "個別支援", "見取り", "振り返り"] },
+        { name: "学級経営の観点", items: ["安心感", "生活", "学習", "関係づくり", "自治", "役割", "保護者連携", "個別支援"] },
+        { name: "実行計画", items: ["最初にすること", "誰がするか", "いつまで", "必要なもの", "確認先", "共有方法", "困った時", "次の一手"] },
+        { name: "研修設計", items: ["ねらい", "対象", "導入", "体験", "共有", "資料", "留意点", "次の行動"] },
+        { name: "省察", items: ["事実", "解釈", "感情", "根拠", "児童の姿", "自分の関わり", "別の見方", "次に試すこと"] },
+        { name: "インプット整理", items: ["重要な主張", "根拠", "具体例", "キーワード", "印象に残った言葉", "既知との違い", "使える場面", "一言で言うと"] },
+        { name: "文章化", items: ["何を伝えるか", "読み手は誰か", "根拠は何か", "具体例は何か", "引用・資料", "論理の流れ", "書き足すこと", "削ること"] }
+      ],
+      smallIdea: [
+        { name: "視点をずらす", items: ["児童から見る", "初心者から見る", "保護者から見る", "同僚から見る", "未来から見る", "過去から見る", "反対側から見る", "俯瞰して見る"] },
+        { name: "制約を変える", items: ["時間を半分にする", "人手を減らす", "準備を減らす", "道具を変える", "場所を変える", "順番を変える", "対象を絞る", "小さく試す"] },
+        { name: "発想チェック", items: ["転用する", "応用する", "変更する", "拡大する", "縮小する", "代用する", "並べ替える", "組み合わせる"] },
+        { name: "価値から見る", items: ["子どもの学び", "安心感", "自律", "対話", "公平さ", "継続しやすさ", "成長の見取り", "意味のある負荷"] },
+        { name: "実務に落とす", items: ["最初の一手", "やめること", "残すこと", "任せること", "共有すること", "記録すること", "確認すること", "次回直すこと"] },
+        { name: "文章にする", items: ["一文で言う", "事実を書く", "解釈を書く", "根拠を書く", "具体例を書く", "読み手の疑問", "反論への備え", "次の課題"] }
+      ]
+    };
+
+    const els = {
+      structureModeBtn: document.getElementById("structureModeBtn"),
+      wholeModeBtn: document.getElementById("wholeModeBtn"),
+      undoBtn: document.getElementById("undoBtn"),
+      redoBtn: document.getElementById("redoBtn"),
+      arrangeBtn: document.getElementById("arrangeBtn"),
+      copySheetBtn: document.getElementById("copySheetBtn"),
+      exportJsonBtn: document.getElementById("exportJsonBtn"),
+      printBtn: document.getElementById("printBtn"),
+      manualBtn: document.getElementById("manualBtn"),
+      backBtn: document.getElementById("backBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      grid: document.getElementById("grid"),
+      viewTitle: document.getElementById("viewTitle"),
+      viewLead: document.getElementById("viewLead"),
+      editorTitle: document.getElementById("editorTitle"),
+      editorLead: document.getElementById("editorLead"),
+      identityPanel: document.getElementById("identityPanel"),
+      selectedTitle: document.getElementById("selectedTitle"),
+      selectedNote: document.getElementById("selectedNote"),
+      saveStatus: document.getElementById("saveStatus"),
+      progressFill: document.getElementById("progressFill"),
+      arrangeStatus: document.getElementById("arrangeStatus"),
+      importJsonInput: document.getElementById("importJsonInput"),
+      sheetPasteInput: document.getElementById("sheetPasteInput"),
+      importSheetPasteBtn: document.getElementById("importSheetPasteBtn"),
+      manualPanel: document.getElementById("manualPanel"),
+      manualCloseBtn: document.getElementById("manualCloseBtn"),
+      guidePanel: document.getElementById("guidePanel"),
+      guideTitle: document.getElementById("guideTitle"),
+      guideLead: document.getElementById("guideLead"),
+      guideNote: document.getElementById("guideNote"),
+      guideOptions: document.getElementById("guideOptions"),
+      guidePreview: document.getElementById("guidePreview"),
+      guideFillEmptyBtn: document.getElementById("guideFillEmptyBtn"),
+      guideReplaceAllBtn: document.getElementById("guideReplaceAllBtn"),
+      guideCloseBtn: document.getElementById("guideCloseBtn"),
+      printPanel: document.getElementById("printPanel"),
+      printCloseBtn: document.getElementById("printCloseBtn"),
+      printBigBtn: document.getElementById("printBigBtn"),
+      printSmallBtn: document.getElementById("printSmallBtn"),
+      printWholeBtn: document.getElementById("printWholeBtn"),
+      printNote: document.getElementById("printNote"),
+      toast: document.getElementById("toast")
+    };
+
+    let data = loadData();
+    let ui = createUiState();
+    let saveTimer = null;
+    let printRestoreState = null;
+    let undoSnapshot = null;
+    let redoSnapshot = null;
+    let guideState = null;
+    let printTarget = "whole";
+
+    function createUiState() {
+      return {
+        mode: "structure",
+        activeView: "big",
+        activeBlockId: null,
+        selected: { kind: "theme" },
+        arrangeMode: false,
+        arrangeSource: null,
+        suppressClick: false,
+        pointerDrag: null
+      };
+    }
+
+    function createBlankData() {
+      const blocks = {};
+      const blockIds = ["block-8", "block-1", "block-2", "block-3", "block-4", "block-5", "block-6", "block-7"];
+      blockIds.forEach((blockId, index) => {
+        const cells = {};
+        const cellLayout = {};
+        const blockNumber = blockId.replace("block-", "");
+        const originalLabel = BLOCK_NUMERALS[index];
+        OUTER_POSITIONS.forEach((position, cellIndex) => {
+          const cellId = `${blockId}-cell-${String(cellIndex + 1).padStart(3, "0")}`;
+          cellLayout[position] = cellId;
+          cells[cellId] = {
+            id: cellId,
+            originalLabel: `${originalLabel}-${cellIndex + 1}`,
+            originPosition: position,
+            title: "",
+            note: "",
+            hint: ""
+          };
+        });
+        blocks[blockId] = {
+          id: blockId,
+          number: blockNumber,
+          originalLabel,
+          title: "",
+          note: "",
+          hint: "",
+          palette: BLOCK_PALETTES[index],
+          cellLayout,
+          cells
+        };
+      });
+
+      return {
+        version: 1,
+        title: "",
+        centerTheme: { title: "", note: "" },
+        blockLayout: {
+          topLeft: "block-8",
+          top: "block-1",
+          topRight: "block-2",
+          left: "block-7",
+          right: "block-3",
+          bottomLeft: "block-6",
+          bottom: "block-5",
+          bottomRight: "block-4"
+        },
+        blocks,
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createBlankData();
+        return normalizeData(JSON.parse(raw));
+      } catch (error) {
+        return createBlankData();
+      }
+    }
+
+    function normalizeData(source) {
+      const blank = createBlankData();
+      if (!source || source.version !== 1) return blank;
+      const normalized = {
+        ...blank,
+        ...source,
+        centerTheme: { ...blank.centerTheme, ...(source.centerTheme || {}) },
+        blockLayout: { ...blank.blockLayout, ...(source.blockLayout || {}) },
+        blocks: { ...blank.blocks, ...(source.blocks || {}) }
+      };
+      Object.keys(blank.blocks).forEach((blockId, index) => {
+        const legacyBlock = blockId === "block-8" ? normalized.blocks["block-etc"] : null;
+        const sourceBlock = normalized.blocks[blockId] || legacyBlock;
+        normalized.blocks[blockId] = {
+          ...blank.blocks[blockId],
+          ...(sourceBlock || {}),
+          id: blockId,
+          number: blank.blocks[blockId].number,
+          originalLabel: blank.blocks[blockId].originalLabel,
+          title: sourceBlock && (sourceBlock.title === "あとで・その他" || /^入口\d+$/.test(sourceBlock.title)) ? "" : ((sourceBlock && sourceBlock.title) || ""),
+          palette: (sourceBlock && sourceBlock.palette) || BLOCK_PALETTES[index],
+          cellLayout: {
+            ...blank.blocks[blockId].cellLayout,
+            ...((sourceBlock && sourceBlock.cellLayout) || {})
+          },
+          cells: {
+            ...blank.blocks[blockId].cells,
+            ...((sourceBlock && sourceBlock.cells) || {})
+          }
+        };
+        Object.entries(normalized.blocks[blockId].cellLayout).forEach(([position, cellId]) => {
+          const cell = normalized.blocks[blockId].cells[cellId];
+          if (!cell) return;
+          if (!cell.id) cell.id = cellId;
+          if (!cell.originPosition) cell.originPosition = position;
+          migrateGuideHint(cell);
+          if (!cell.originalLabel) {
+            const sourceIndex = OUTER_POSITIONS.indexOf(cell.originPosition);
+            cell.originalLabel = `${normalized.blocks[blockId].originalLabel || ""}-${sourceIndex + 1}`;
+          }
+        });
+        migrateGuideHint(normalized.blocks[blockId]);
+      });
+      delete normalized.blocks["block-etc"];
+      Object.entries(normalized.blockLayout).forEach(([position, blockId]) => {
+        if (blockId === "block-etc") normalized.blockLayout[position] = "block-8";
+      });
+      return normalized;
+    }
+
+    function guideHintTerms() {
+      return new Set(Object.values(GUIDE_SETS).flatMap(sets => sets.flatMap(set => set.items)));
+    }
+
+    function migrateGuideHint(target) {
+      if (!target || (target.hint || "").trim()) return;
+      const title = (target.title || "").trim();
+      if (!title || !guideHintTerms().has(title)) return;
+      target.hint = title;
+      target.title = "";
+    }
+
+    function saveNow(silent = false) {
+      data.title = data.centerTheme.title || "";
+      data.updatedAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      renderProgress();
+      if (!silent) showToast("保存しました");
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => saveNow(true), 400);
+    }
+
+    function render() {
+      document.body.classList.toggle("print-view", ui.mode === "print");
+      els.structureModeBtn.classList.toggle("active", ui.mode === "structure");
+      els.wholeModeBtn.classList.toggle("active", ui.mode === "whole");
+      els.arrangeBtn.classList.toggle("active", ui.arrangeMode);
+      els.backBtn.hidden = !(ui.mode === "structure" && ui.activeView === "small");
+      els.arrangeBtn.hidden = ui.mode !== "structure";
+      els.arrangeBtn.disabled = ui.mode === "whole" || ui.mode === "print";
+
+      if (ui.mode === "print" && printTarget === "big") renderBigView();
+      else if (ui.mode === "print" && printTarget === "small") renderSmallView();
+      else if (ui.mode === "whole" || ui.mode === "print") renderNineView();
+      else if (ui.activeView === "small") renderSmallView();
+      else renderBigView();
+
+      renderEditor();
+      renderArrangeStatus();
+      renderProgress();
+      renderHistoryButtons();
+    }
+
+    function renderBigView() {
+      els.grid.className = "grid three";
+      els.viewTitle.textContent = ui.mode === "print" ? "印刷表示: 大マンダラ" : "大マンダラ";
+      els.viewLead.textContent = "中央テーマと周囲8つの小マンダラを配置します。";
+      els.grid.innerHTML = "";
+      buildBigMandalaView().forEach(item => els.grid.appendChild(createThreeTile(item)));
+    }
+
+    function renderSmallView() {
+      const block = data.blocks[ui.activeBlockId];
+      els.grid.className = "grid three";
+      const title = block ? `小マンダラ: ${block.originalLabel || ""}${block.title ? " " + block.title : ""}` : "小マンダラ";
+      els.viewTitle.textContent = ui.mode === "print" ? `印刷表示: ${title}` : title;
+      els.viewLead.textContent = "中央に入口テーマ、周囲8マスに内容を書きます。";
+      els.grid.innerHTML = "";
+      buildSmallMandalaView(ui.activeBlockId).forEach(item => els.grid.appendChild(createThreeTile(item)));
+    }
+
+    function renderNineView() {
+      els.grid.className = "grid nine";
+      els.viewTitle.textContent = ui.mode === "print" ? "印刷表示" : "全マンダラ";
+      els.viewLead.textContent = "9×9全体を直接編集できます。";
+      els.grid.innerHTML = "";
+      buildNineByNineMatrix().flat().forEach(item => els.grid.appendChild(createNineTile(item)));
+    }
+
+    function buildBigMandalaView() {
+      return POSITIONS_3X3.map(position => {
+        if (position === "center") {
+          return { kind: "theme", position, id: "centerTheme", title: data.centerTheme.title, note: data.centerTheme.note, identityLabel: "大・中央" };
+        }
+        const blockId = data.blockLayout[position];
+        const block = data.blocks[blockId];
+        return {
+          kind: "block",
+          id: block.id,
+          blockId: block.id,
+          position,
+          title: block.title,
+          note: block.note,
+          filledCount: countFilledCells(block),
+          palette: block.palette,
+          originalLabel: block.originalLabel,
+          hint: block.hint,
+          identityLabel: block.originalLabel
+        };
+      });
+    }
+
+    function buildSmallMandalaView(blockId) {
+      const block = data.blocks[blockId];
+      return POSITIONS_3X3.map(position => {
+        if (position === "center") {
+          return { kind: "block", id: block.id, blockId: block.id, position, title: block.title, note: block.note, hint: block.hint, palette: block.palette, originalLabel: block.originalLabel, identityLabel: block.originalLabel, isCenterBlock: true };
+        }
+        const cellId = block.cellLayout[position];
+        const cell = block.cells[cellId];
+        return { kind: "cell", id: cell.id, blockId: block.id, cellId: cell.id, originalLabel: cell.originalLabel, position, title: cell.title, note: cell.note, hint: cell.hint, palette: block.palette, identityLabel: cell.originalLabel };
+      });
+    }
+
+    function buildNineByNineMatrix() {
+      const matrix = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => ({ kind: "empty", title: "", note: "" })));
+      matrix[4][4] = { kind: "theme", id: "centerTheme", title: data.centerTheme.title, note: data.centerTheme.note };
+      OUTER_POSITIONS.forEach(blockPosition => {
+        const blockId = data.blockLayout[blockPosition];
+        const block = data.blocks[blockId];
+        if (!block) return;
+        const base = BLOCK_BASES[blockPosition];
+        matrix[base.row + 1][base.col + 1] = {
+          kind: "block",
+          id: block.id,
+          blockId: block.id,
+          blockPosition,
+          title: block.title,
+          note: block.note,
+          hint: block.hint,
+          palette: block.palette,
+          originalLabel: block.originalLabel,
+          identityLabel: block.originalLabel,
+        };
+        OUTER_POSITIONS.forEach(cellPosition => {
+          const cellId = block.cellLayout[cellPosition];
+          const cell = block.cells[cellId];
+          if (!cell) return;
+          const offset = POSITION_OFFSETS[cellPosition];
+          matrix[base.row + offset.row][base.col + offset.col] = {
+            kind: "cell",
+            id: cell.id,
+            blockId: block.id,
+            cellId: cell.id,
+            blockPosition,
+            cellPosition,
+            title: cell.title,
+            note: cell.note,
+            hint: cell.hint,
+            palette: block.palette,
+            originalLabel: cell.originalLabel,
+            identityLabel: cell.originalLabel,
+          };
+        });
+      });
+      return matrix;
+    }
+
+    function createThreeTile(item) {
+      const tile = document.createElement("div");
+      tile.className = tileClass(item, true);
+      bindTileData(tile, item);
+      markTileState(tile, item);
+      applyPalette(tile, item);
+      prepareDragAndDrop(tile, item);
+
+      const input = document.createElement("textarea");
+      input.value = item.title || "";
+      input.placeholder = placeholderFor(item);
+      input.readOnly = canArrangeItem(item);
+      input.addEventListener("focus", () => selectItem(item));
+      input.addEventListener("input", event => {
+        updateItemTitle(item, event.target.value);
+        scheduleSave();
+        renderProgress();
+      });
+      tile.appendChild(input);
+      appendIdentityBadge(tile, item);
+
+      if (item.kind === "theme" && ui.activeView === "big") {
+        tile.classList.add("has-open");
+        const actions = document.createElement("div");
+        actions.className = "tile-actions";
+        actions.appendChild(createGuideButton("用途", "bigUse", item));
+        actions.appendChild(createGuideButton("発想", "bigIdea", item));
+        tile.appendChild(actions);
+      }
+
+      if (item.kind === "block" && item.isCenterBlock) {
+        tile.classList.add("has-open");
+        const actions = document.createElement("div");
+        actions.className = "tile-actions";
+        actions.appendChild(createGuideButton("観点", "smallPerspective", item));
+        actions.appendChild(createGuideButton("発想", "smallIdea", item));
+        tile.appendChild(actions);
+      }
+
+      if (item.kind === "block" && ui.activeView === "big") {
+        tile.classList.add("has-open");
+
+        const actions = document.createElement("div");
+        actions.className = "tile-actions";
+        const open = document.createElement("button");
+        open.className = "mini-btn";
+        open.type = "button";
+        open.textContent = "開く";
+        setButtonTooltip(open, "この入口に対応する小マンダラを開きます。");
+        open.addEventListener("click", event => {
+          event.stopPropagation();
+          if (ui.arrangeMode) return;
+          openSmallMandala(item.blockId);
+        });
+        actions.appendChild(open);
+        tile.appendChild(actions);
+      }
+
+      tile.addEventListener("click", event => {
+        if (ui.suppressClick) {
+          event.preventDefault();
+          ui.suppressClick = false;
+          return;
+        }
+        handleTileClick(item);
+      });
+      return tile;
+    }
+
+    function createGuideButton(label, guideType, item) {
+      const button = document.createElement("button");
+      button.className = "mini-btn";
+      button.type = "button";
+      button.textContent = label;
+      setButtonTooltip(button, guideTooltip(label, guideType));
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+        if (ui.arrangeMode) return;
+        openGuide(guideType, item);
+      });
+      return button;
+    }
+
+    function setButtonTooltip(button, text) {
+      button.dataset.tooltip = text;
+    }
+
+    function guideTooltip(label, guideType) {
+      if (guideType === "bigUse") return "大マンダラ全体の用途候補を、周囲8セルのヒントとして表示します。";
+      if (guideType === "bigIdea") return "大マンダラ全体をどう分けるか、周囲8セルのヒントとして表示します。";
+      if (guideType === "smallPerspective") return "この小マンダラを具体化する観点を、周囲8セルのヒントとして表示します。";
+      return "この小マンダラを広げる発想視点を、周囲8セルのヒントとして表示します。";
+    }
+
+    function createNineTile(item) {
+      const tile = document.createElement("div");
+      tile.className = tileClass(item, false);
+      bindTileData(tile, item);
+      markTileState(tile, item);
+      applyPalette(tile, item);
+
+      const input = document.createElement("textarea");
+      input.value = item.title || "";
+      input.placeholder = placeholderFor(item);
+      input.disabled = item.kind === "empty";
+      input.addEventListener("focus", () => selectItem(item));
+      input.addEventListener("input", event => {
+        updateItemTitle(item, event.target.value);
+        scheduleSave();
+        renderProgress();
+      });
+      tile.appendChild(input);
+      appendIdentityBadge(tile, item);
+      tile.addEventListener("click", () => selectItem(item));
+      return tile;
+    }
+
+    function tileClass(item, isBig) {
+      const classes = ["tile"];
+      if (isBig) classes.push("big");
+      if (item.kind === "theme") classes.push("theme");
+      if (item.kind === "block") classes.push("block");
+      if (item.kind === "cell") classes.push("cell");
+      return classes.join(" ");
+    }
+
+    function markTileState(tile, item) {
+      if (isSelected(item)) tile.classList.add("selected");
+      if (ui.arrangeSource && sameArrangeTarget(ui.arrangeSource, item)) tile.classList.add("arrange-source");
+      if (canArrangeItem(item)) tile.classList.add("can-drag");
+    }
+
+    function bindTileData(tile, item) {
+      tile.__mandalaItem = item;
+      tile.dataset.itemKind = item.kind;
+      if (item.blockId) tile.dataset.blockId = item.blockId;
+      if (item.cellId) tile.dataset.cellId = item.cellId;
+      if (item.id) tile.dataset.itemId = item.id;
+    }
+
+    function appendIdentityBadge(tile, item) {
+      if (!item.identityLabel || item.kind === "empty") return;
+      const badge = document.createElement("span");
+      badge.className = "tile-id";
+      const label = document.createElement("span");
+      label.textContent = item.identityLabel;
+      badge.appendChild(label);
+      if (item.kind === "block" && ui.activeView === "big" && typeof item.filledCount === "number") {
+        const count = document.createElement("span");
+        count.className = "tile-count";
+        count.textContent = `${item.filledCount}/8`;
+        badge.appendChild(count);
+      }
+      if (item.hint) {
+        const hint = document.createElement("span");
+        hint.className = "tile-hint";
+        hint.textContent = item.hint;
+        badge.appendChild(hint);
+      }
+      tile.appendChild(badge);
+    }
+
+    function applyPalette(tile, item) {
+      if (!item.palette) return;
+      tile.style.setProperty("--block-color", item.palette.color);
+      tile.style.setProperty("--block-soft", item.palette.soft);
+      tile.style.setProperty("--block-border", item.palette.border);
+      tile.style.setProperty("--block-ring", item.palette.ring);
+    }
+
+    function placeholderFor(item) {
+      if (item.kind === "theme") return "中央テーマ";
+      if (item.kind === "block") return item.originalLabel || "小マンダラ";
+      if (item.kind === "cell") return item.originalLabel || "セル";
+      return "";
+    }
+
+    function handleTileClick(item) {
+      if (ui.arrangeMode && item.kind !== "theme") return handleArrangeClick(item);
+      selectItem(item);
+    }
+
+    function selectItem(item) {
+      if (item.kind === "theme") ui.selected = { kind: "theme" };
+      if (item.kind === "block") ui.selected = { kind: "block", blockId: item.blockId || item.id };
+      if (item.kind === "cell") ui.selected = { kind: "cell", blockId: item.blockId, cellId: item.cellId || item.id };
+      renderEditor();
+    }
+
+    function isSelected(item) {
+      if (item.kind === "theme") return ui.selected.kind === "theme";
+      if (item.kind === "block") return ui.selected.kind === "block" && ui.selected.blockId === (item.blockId || item.id);
+      if (item.kind === "cell") return ui.selected.kind === "cell" && ui.selected.cellId === (item.cellId || item.id);
+      return false;
+    }
+
+    function updateItemTitle(item, value) {
+      rememberDataChange();
+      if (item.kind === "theme") data.centerTheme.title = value;
+      if (item.kind === "block") data.blocks[item.blockId || item.id].title = value;
+      if (item.kind === "cell") data.blocks[item.blockId].cells[item.cellId || item.id].title = value;
+      syncEditorTitle(value);
+    }
+
+    function syncEditorTitle(value) {
+      const active = document.activeElement;
+      if (active !== els.selectedTitle) els.selectedTitle.value = value;
+    }
+
+    function refreshVisibleSelectedTitle(value) {
+      let selector = "";
+      if (ui.selected.kind === "theme") selector = '.tile[data-item-kind="theme"] textarea';
+      if (ui.selected.kind === "block") selector = `.tile[data-item-kind="block"][data-block-id="${ui.selected.blockId}"] textarea`;
+      if (ui.selected.kind === "cell") selector = `.tile[data-item-kind="cell"][data-cell-id="${ui.selected.cellId}"] textarea`;
+      if (selector) {
+        document.querySelectorAll(selector).forEach(input => {
+          if (input !== document.activeElement) input.value = value;
+        });
+      }
+      if (ui.activeView === "small" && ui.selected.kind === "block" && ui.selected.blockId === ui.activeBlockId) {
+        const block = data.blocks[ui.activeBlockId];
+        els.viewTitle.textContent = `小マンダラ: ${block.originalLabel || ""}${value ? " " + value : ""}`;
+      }
+    }
+
+    function renderEditor() {
+      const target = getSelectedTarget();
+      if (!target) return;
+      els.editorTitle.textContent = target.label;
+      els.editorLead.textContent = target.lead;
+      els.identityPanel.innerHTML = target.identity.map(row => `<div><strong>${htmlEscape(row.label)}</strong>: ${htmlEscape(row.value)}</div>`).join("");
+      els.selectedTitle.value = target.object.title || "";
+      els.selectedNote.value = target.object.note || "";
+    }
+
+    function getSelectedTarget() {
+      if (ui.selected.kind === "theme") {
+        return {
+          label: "中央テーマ",
+          lead: "大マンダラの中心に置くテーマです。",
+          identity: [
+            { label: "種別", value: "大マンダラ中央" },
+            { label: "ID", value: "centerTheme" },
+            { label: "現在位置", value: "中央" }
+          ],
+          object: data.centerTheme
+        };
+      }
+      if (ui.selected.kind === "block") {
+        const block = data.blocks[ui.selected.blockId];
+        const position = findBlockPosition(block.id) || "center";
+        return {
+          label: "小マンダラ",
+          lead: "3×3のまとまりの入口テーマです。",
+          identity: [
+            { label: "元番地", value: block.originalLabel || "" },
+            { label: "小マンダラID", value: block.id },
+            { label: "現在位置", value: POSITION_LABELS[position] || "小マンダラ中央" },
+            { label: "表示", value: `${block.originalLabel || ""} ${block.title || ""}`.trim() || block.originalLabel || "未入力" }
+          ],
+          object: block
+        };
+      }
+      if (ui.selected.kind === "cell") {
+        const block = data.blocks[ui.selected.blockId];
+        const cell = block.cells[ui.selected.cellId];
+        const position = findCellPosition(block, cell.id);
+        return {
+          label: "小マンダラ内セル",
+          lead: `${block.title || "小マンダラ"} の中の1マスです。`,
+          identity: [
+            { label: "元番地", value: cell.originalLabel || "" },
+            { label: "小マンダラID", value: block.id },
+            { label: "セルID", value: cell.id },
+            { label: "現在位置", value: POSITION_LABELS[position] || "" },
+            { label: "表示", value: `${cell.originalLabel || ""} ${cell.title || ""}`.trim() || cell.originalLabel || "未入力" }
+          ],
+          object: cell
+        };
+      }
+      return null;
+    }
+
+    function openSmallMandala(blockId) {
+      ui.mode = "structure";
+      ui.activeView = "small";
+      ui.activeBlockId = blockId;
+      ui.selected = { kind: "block", blockId };
+      ui.arrangeSource = null;
+      render();
+    }
+
+    function handleArrangeClick(item) {
+      if (item.kind === "block" && ui.activeView === "big") {
+        const position = findBlockPosition(item.blockId || item.id);
+        if (!ui.arrangeSource) {
+          ui.arrangeSource = { type: "block", position };
+          render();
+          return;
+        }
+        rememberDataChange();
+        swap(data.blockLayout, ui.arrangeSource.position, position);
+        ui.arrangeSource = null;
+        saveNow(true);
+        render();
+        showToast("小マンダラを配置換えしました");
+        return;
+      }
+
+      if (item.kind === "cell" && ui.activeView === "small") {
+        const block = data.blocks[item.blockId];
+        const position = findCellPosition(block, item.cellId || item.id);
+        if (!ui.arrangeSource) {
+          ui.arrangeSource = { type: "cell", blockId: item.blockId, position };
+          render();
+          return;
+        }
+        if (ui.arrangeSource.blockId !== item.blockId) return;
+        rememberDataChange();
+        swap(block.cellLayout, ui.arrangeSource.position, position);
+        ui.arrangeSource = null;
+        saveNow(true);
+        render();
+        showToast("セルを配置換えしました");
+      }
+    }
+
+    function prepareDragAndDrop(tile, item) {
+      if (!canArrangeItem(item)) return;
+      tile.draggable = false;
+      tile.addEventListener("pointerdown", event => {
+        if (event.button !== undefined && event.button !== 0) return;
+        const source = getArrangeTarget(item);
+        if (!source) return;
+        ui.pointerDrag = {
+          source,
+          tile,
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          active: false
+        };
+        tile.setPointerCapture?.(event.pointerId);
+      });
+      tile.addEventListener("pointermove", event => {
+        const drag = ui.pointerDrag;
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
+        if (!drag.active && distance < 8) return;
+        if (!drag.active) {
+          drag.active = true;
+          ui.arrangeSource = drag.source;
+          tile.classList.add("is-pointer-dragging", "arrange-source");
+          renderArrangeStatus();
+        }
+        markPointerDropTarget(event.clientX, event.clientY, drag.source);
+        event.preventDefault();
+      });
+      tile.addEventListener("pointerup", event => {
+        finishPointerDrag(event);
+      });
+      tile.addEventListener("pointercancel", () => {
+        clearPointerDrag();
+      });
+      tile.addEventListener("dragstart", event => {
+        const source = getArrangeTarget(item);
+        if (!source) return;
+        ui.arrangeSource = source;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", JSON.stringify(source));
+        tile.classList.add("arrange-source");
+      });
+      tile.addEventListener("dragover", event => {
+        const source = getDragSource(event);
+        if (!source || !canDropOn(source, item)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        tile.classList.add("drag-over");
+      });
+      tile.addEventListener("dragleave", () => {
+        tile.classList.remove("drag-over");
+      });
+      tile.addEventListener("drop", event => {
+        const source = getDragSource(event);
+        tile.classList.remove("drag-over");
+        if (!source || !canDropOn(source, item)) return;
+        event.preventDefault();
+        applyArrangeSwap(source, item);
+      });
+      tile.addEventListener("dragend", () => {
+        tile.classList.remove("drag-over");
+        if (ui.arrangeSource) {
+          ui.arrangeSource = null;
+          render();
+        }
+      });
+    }
+
+    function markPointerDropTarget(x, y, source) {
+      document.querySelectorAll(".tile.drag-over").forEach(tile => tile.classList.remove("drag-over"));
+      const targetTile = getTileAtPoint(x, y);
+      if (!targetTile || !targetTile.__mandalaItem) return;
+      if (canDropOn(source, targetTile.__mandalaItem)) targetTile.classList.add("drag-over");
+    }
+
+    function finishPointerDrag(event) {
+      const drag = ui.pointerDrag;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      drag.tile.releasePointerCapture?.(event.pointerId);
+      document.querySelectorAll(".tile.drag-over").forEach(tile => tile.classList.remove("drag-over"));
+      drag.tile.classList.remove("is-pointer-dragging", "arrange-source");
+
+      if (drag.active) {
+        const targetTile = getTileAtPoint(event.clientX, event.clientY);
+        if (targetTile && targetTile.__mandalaItem && canDropOn(drag.source, targetTile.__mandalaItem)) {
+          applyArrangeSwap(drag.source, targetTile.__mandalaItem);
+        } else {
+          ui.arrangeSource = null;
+          render();
+        }
+        ui.suppressClick = true;
+      }
+      ui.pointerDrag = null;
+    }
+
+    function clearPointerDrag() {
+      document.querySelectorAll(".tile.drag-over, .tile.is-pointer-dragging").forEach(tile => {
+        tile.classList.remove("drag-over", "is-pointer-dragging", "arrange-source");
+      });
+      ui.pointerDrag = null;
+      ui.arrangeSource = null;
+      render();
+    }
+
+    function getTileAtPoint(x, y) {
+      const currentDrag = ui.pointerDrag && ui.pointerDrag.tile;
+      if (currentDrag) currentDrag.style.pointerEvents = "none";
+      const element = document.elementFromPoint(x, y);
+      if (currentDrag) currentDrag.style.pointerEvents = "";
+      return element ? element.closest(".tile.can-drag") : null;
+    }
+
+    function canArrangeItem(item) {
+      if (!ui.arrangeMode || ui.mode !== "structure" || item.kind === "theme") return false;
+      if (ui.activeView === "big") return item.kind === "block";
+      if (ui.activeView === "small") return item.kind === "cell";
+      return false;
+    }
+
+    function getArrangeTarget(item) {
+      if (!canArrangeItem(item)) return null;
+      if (item.kind === "block") {
+        return {
+          type: "block",
+          position: findBlockPosition(item.blockId || item.id)
+        };
+      }
+      if (item.kind === "cell") {
+        return {
+          type: "cell",
+          blockId: item.blockId,
+          position: findCellPosition(data.blocks[item.blockId], item.cellId || item.id)
+        };
+      }
+      return null;
+    }
+
+    function getDragSource(event) {
+      try {
+        const text = event.dataTransfer.getData("text/plain");
+        return text ? JSON.parse(text) : ui.arrangeSource;
+      } catch (error) {
+        return ui.arrangeSource;
+      }
+    }
+
+    function canDropOn(source, item) {
+      const target = getArrangeTarget(item);
+      if (!source || !target || source.type !== target.type) return false;
+      if (source.type === "cell" && source.blockId !== target.blockId) return false;
+      return source.position !== target.position;
+    }
+
+    function applyArrangeSwap(source, item) {
+      const target = getArrangeTarget(item);
+      if (!target) return;
+
+      if (source.type === "block") {
+        rememberDataChange();
+        swap(data.blockLayout, source.position, target.position);
+        ui.arrangeSource = null;
+        saveNow(true);
+        render();
+        showToast("小マンダラをドラッグで配置換えしました");
+        return;
+      }
+
+      if (source.type === "cell") {
+        const block = data.blocks[source.blockId];
+        rememberDataChange();
+        swap(block.cellLayout, source.position, target.position);
+        ui.arrangeSource = null;
+        saveNow(true);
+        render();
+        showToast("セルをドラッグで配置換えしました");
+      }
+    }
+
+    function sameArrangeTarget(source, item) {
+      if (source.type === "block" && item.kind === "block") return source.position === findBlockPosition(item.blockId || item.id);
+      if (source.type === "cell" && item.kind === "cell") return source.blockId === item.blockId && source.position === findCellPosition(data.blocks[item.blockId], item.cellId || item.id);
+      return false;
+    }
+
+    function findBlockPosition(blockId) {
+      return OUTER_POSITIONS.find(position => data.blockLayout[position] === blockId);
+    }
+
+    function findCellPosition(block, cellId) {
+      return OUTER_POSITIONS.find(position => block.cellLayout[position] === cellId);
+    }
+
+    function swap(layout, a, b) {
+      if (!a || !b || a === b) return;
+      const temp = layout[a];
+      layout[a] = layout[b];
+      layout[b] = temp;
+    }
+
+    function renderArrangeStatus() {
+      els.arrangeStatus.classList.toggle("show", ui.arrangeMode);
+      if (!ui.arrangeMode) {
+        els.arrangeStatus.textContent = "";
+        return;
+      }
+      if (ui.activeView === "big") {
+        els.arrangeStatus.textContent = ui.arrangeSource
+          ? "移動先の小マンダラを選んでください。"
+          : "小マンダラをドラッグして入れ替えます。クリック2回でも配置換えできます。";
+      } else {
+        els.arrangeStatus.textContent = ui.arrangeSource
+          ? "移動先のセルを選んでください。"
+          : "セルをドラッグして入れ替えます。クリック2回でも配置換えできます。中央は動かしません。";
+      }
+    }
+
+    function countFilledCells(block) {
+      return Object.values(block.cells).filter(cell => (cell.title || "").trim() || (cell.note || "").trim()).length;
+    }
+
+    function renderProgress() {
+      const total = 1 + (Object.keys(data.blocks).length * 9);
+      let filled = data.centerTheme.title.trim() || data.centerTheme.note.trim() ? 1 : 0;
+      Object.values(data.blocks).forEach(block => {
+        if ((block.title || "").trim() || (block.note || "").trim()) filled += 1;
+        filled += countFilledCells(block);
+      });
+      const percent = Math.round((filled / total) * 100);
+      els.progressFill.style.width = `${percent}%`;
+      els.saveStatus.textContent = `入力済み ${filled}/${total}。変更は自動保存されます。`;
+    }
+
+    function renderHistoryButtons() {
+      els.undoBtn.disabled = !undoSnapshot;
+      els.redoBtn.disabled = !redoSnapshot;
+    }
+
+    function captureDataSnapshot() {
+      return JSON.stringify(data);
+    }
+
+    function restoreDataSnapshot(snapshot) {
+      data = normalizeData(JSON.parse(snapshot));
+      saveNow(true);
+      render();
+    }
+
+    function rememberDataChange() {
+      const snapshot = captureDataSnapshot();
+      if (snapshot === undoSnapshot) return;
+      undoSnapshot = snapshot;
+      redoSnapshot = null;
+      renderHistoryButtons();
+    }
+
+    function undoChange() {
+      if (!undoSnapshot) return;
+      redoSnapshot = captureDataSnapshot();
+      const snapshot = undoSnapshot;
+      undoSnapshot = null;
+      ui.arrangeSource = null;
+      ui.pointerDrag = null;
+      restoreDataSnapshot(snapshot);
+      showToast("1つ前に戻しました");
+    }
+
+    function redoChange() {
+      if (!redoSnapshot) return;
+      undoSnapshot = captureDataSnapshot();
+      const snapshot = redoSnapshot;
+      redoSnapshot = null;
+      ui.arrangeSource = null;
+      ui.pointerDrag = null;
+      restoreDataSnapshot(snapshot);
+      showToast("1つ進みました");
+    }
+
+    function buildElevenByElevenMatrix() {
+      const nine = buildNineByNineMatrix();
+      const eleven = Array.from({ length: 11 }, () => Array.from({ length: 11 }, () => ({ kind: "gap", title: "", note: "" })));
+      nine.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          const targetRow = rowIndex + Math.floor(rowIndex / 3);
+          const targetCol = colIndex + Math.floor(colIndex / 3);
+          eleven[targetRow][targetCol] = cell;
+        });
+      });
+      return eleven;
+    }
+
+    function formatCell(cell) {
+      if (!cell || cell.kind === "gap" || cell.kind === "empty") return "";
+      const title = (cell.title || "").trim();
+      const note = (cell.note || "").trim();
+      return note ? `${title}\n${note}` : title;
+    }
+
+    async function copyForSheet() {
+      const matrix = buildElevenByElevenMatrix();
+      const text = matrix.map(row => row.map(cell => tsvEscape(formatCell(cell))).join("\t")).join("\n");
+      const html = buildSheetHtml(matrix);
+      try {
+        if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "text/html": new Blob([html], { type: "text/html" }),
+              "text/plain": new Blob([text], { type: "text/plain" })
+            })
+          ]);
+        } else {
+          await copyText(text);
+        }
+        showToast("表計算に貼れる形でコピーしました");
+      } catch (error) {
+        await copyText(text);
+        showToast("表計算に貼れる形でコピーしました");
+      }
+    }
+
+    function buildSheetHtml(matrix) {
+      const rows = matrix.map(row => {
+        const cells = row.map(cell => {
+          if (cell.kind === "gap") return '<td style="width:18px;height:18px;border:0;background:#ffffff;padding:0;"></td>';
+          const isStrong = cell.kind === "theme" || cell.kind === "block";
+          const palette = cell.palette;
+          const background = cell.kind === "theme"
+            ? "#1f6f5b"
+            : (cell.kind === "block" && palette
+              ? palette.color
+              : (cell.kind === "cell" && palette ? palette.soft : "#ffffff"));
+          const color = cell.kind === "theme" ? "#ffffff" : "#25312c";
+          const textColor = cell.kind === "block" && palette ? "#ffffff" : color;
+          const border = palette ? palette.border : "#d7ded8";
+          const content = htmlEscape(formatCell(cell)).replace(/\n/g, "<br>");
+          return `<td style="width:112px;height:82px;border:1px solid ${border};background:${background};color:${textColor};vertical-align:middle;text-align:center;font-family:Arial,'Noto Sans JP',sans-serif;font-size:11pt;line-height:1.35;padding:6px;font-weight:${isStrong ? 700 : 400};">${content}</td>`;
+        }).join("");
+        return `<tr>${cells}</tr>`;
+      }).join("");
+      return `<table style="border-collapse:collapse;table-layout:fixed;">${rows}</table>`;
+    }
+
+    function exportJson() {
+      const fileBaseName = getFileBaseName();
+      saveNow(true);
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const safeTitle = fileBaseName.replace(/[\\/:*?"<>|]/g, "_");
+      link.href = url;
+      link.download = `${safeTitle}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("ファイルを保存しました");
+    }
+
+    function getFileBaseName() {
+      const title = (data.centerTheme.title || data.title || "").trim();
+      return title || "teacher-mandala";
+    }
+
+    function importJson(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          rememberDataChange();
+          data = normalizeData(JSON.parse(reader.result));
+          ui = createUiState();
+          saveNow(true);
+          render();
+          showToast("JSONを読み込みました");
+        } catch (error) {
+          showToast("JSONを読み込めませんでした");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    function parseDelimitedText(text) {
+      const source = String(text || "").replace(/\u00a0/g, " ");
+      const delimiter = source.includes("\t") ? "\t" : ",";
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let index = 0; index < source.length; index += 1) {
+        const char = source[index];
+        const next = source[index + 1];
+        if (char === '"' && inQuotes && next === '"') {
+          cell += '"';
+          index += 1;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === delimiter && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") index += 1;
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      rows.push(row);
+      return rows.filter(currentRow => currentRow.some(value => String(value || "").trim()));
+    }
+
+    function normalizePastedMatrix(rows) {
+      const rowCount = rows.length;
+      const colCount = rows.reduce((max, row) => Math.max(max, row.length), 0);
+      if (rowCount >= 11 && colCount >= 11) {
+        const indexes = [0, 1, 2, 4, 5, 6, 8, 9, 10];
+        return indexes.map(rowIndex => indexes.map(colIndex => rows[rowIndex]?.[colIndex] || ""));
+      }
+      if (rowCount >= 9 && colCount >= 9) {
+        return Array.from({ length: 9 }, (_, rowIndex) =>
+          Array.from({ length: 9 }, (_, colIndex) => rows[rowIndex]?.[colIndex] || "")
+        );
+      }
+      return null;
+    }
+
+    function parsePastedCell(value) {
+      const lines = String(value || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .map(line => line.trim());
+      return {
+        title: lines[0] || "",
+        note: lines.slice(1).filter(Boolean).join("\n")
+      };
+    }
+
+    function createDataFromPastedMatrix(matrix) {
+      const nextData = createBlankData();
+      const theme = parsePastedCell(matrix[4]?.[4] || "");
+      nextData.centerTheme.title = theme.title;
+      nextData.centerTheme.note = theme.note;
+      nextData.title = theme.title;
+
+      OUTER_POSITIONS.forEach(blockPosition => {
+        const blockId = nextData.blockLayout[blockPosition];
+        const block = nextData.blocks[blockId];
+        const base = BLOCK_BASES[blockPosition];
+        const blockText = parsePastedCell(matrix[base.row + 1]?.[base.col + 1] || "");
+        block.title = blockText.title;
+        block.note = blockText.note;
+
+        OUTER_POSITIONS.forEach(cellPosition => {
+          const offset = POSITION_OFFSETS[cellPosition];
+          const cellId = block.cellLayout[cellPosition];
+          const cell = block.cells[cellId];
+          const cellText = parsePastedCell(matrix[base.row + offset.row]?.[base.col + offset.col] || "");
+          cell.title = cellText.title;
+          cell.note = cellText.note;
+        });
+      });
+      return nextData;
+    }
+
+    function importSheetPaste() {
+      const text = els.sheetPasteInput.value;
+      if (!text.trim()) {
+        showToast("貼り付け内容が空です");
+        return;
+      }
+      const matrix = normalizePastedMatrix(parseDelimitedText(text));
+      if (!matrix) {
+        showToast("9×9または11×11の表として読み込めませんでした");
+        return;
+      }
+      rememberDataChange();
+      data = normalizeData(createDataFromPastedMatrix(matrix));
+      ui = createUiState();
+      saveNow(true);
+      render();
+      showToast("スプシ貼り付けから読み込みました");
+    }
+
+    function setMode(mode) {
+      ui.mode = mode;
+      ui.arrangeSource = null;
+      if (mode === "whole" || mode === "print") ui.activeView = "big";
+      render();
+    }
+
+    function toggleArrange() {
+      if (ui.mode !== "structure") return;
+      ui.arrangeMode = !ui.arrangeMode;
+      ui.arrangeSource = null;
+      render();
+    }
+
+    function resetData() {
+      const ok = confirm("入力内容と配置を初期化します。よろしいですか。");
+      if (!ok) return;
+      rememberDataChange();
+      data = createBlankData();
+      ui = createUiState();
+      saveNow(true);
+      render();
+      showToast("初期化しました");
+    }
+
+    function captureUiState() {
+      return JSON.parse(JSON.stringify(ui));
+    }
+
+    function restoreUiState(state) {
+      if (!state) return;
+      ui = state;
+      render();
+    }
+
+    function preparePrintView() {
+      if (!printRestoreState) printRestoreState = captureUiState();
+      ui.mode = "print";
+      if (printTarget === "small" && !ui.activeBlockId) printTarget = "big";
+      ui.activeView = printTarget === "small" ? "small" : "big";
+      ui.arrangeMode = false;
+      ui.arrangeSource = null;
+      render();
+    }
+
+    function finishPrintView() {
+      const state = printRestoreState;
+      printRestoreState = null;
+      restoreUiState(state);
+    }
+
+    function waitForPaint() {
+      return new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
+    }
+
+    function openPrintPanel() {
+      els.printSmallBtn.disabled = !(ui.mode === "structure" && ui.activeView === "small" && ui.activeBlockId);
+      els.printNote.textContent = els.printSmallBtn.disabled
+        ? "小マンダラを印刷するには、先に小マンダラを開いてください。ブラウザ印刷は補助機能です。"
+        : "ブラウザ印刷は補助機能です。配布・共有には「スプシにコピー」も使えます。";
+      els.printPanel.classList.add("open");
+      els.printWholeBtn.focus();
+    }
+
+    function closePrintPanel() {
+      els.printPanel.classList.remove("open");
+    }
+
+    async function printSheet(target = "whole") {
+      if (target === "small" && !(ui.mode === "structure" && ui.activeView === "small" && ui.activeBlockId)) {
+        showToast("先に小マンダラを開いてください");
+        return;
+      }
+      printTarget = target;
+      saveNow(true);
+      closePrintPanel();
+      preparePrintView();
+      await waitForPaint();
+      window.print();
+    }
+
+    function openGuide(type, item) {
+      const sets = GUIDE_SETS[type] || [];
+      const first = sets[0];
+      guideState = {
+        type,
+        blockId: item.blockId || item.id || null,
+        selectedName: first ? first.name : "",
+        items: first ? [...first.items] : []
+      };
+      renderGuide();
+      els.guidePanel.classList.add("open");
+      els.guideCloseBtn.focus();
+    }
+
+    function closeGuide() {
+      els.guidePanel.classList.remove("open");
+      guideState = null;
+    }
+
+    function guideTitleFor(type) {
+      if (type === "bigUse") return "用途から作る";
+      if (type === "bigIdea") return "発想を広げる";
+      if (type === "smallPerspective") return "観点を出す";
+      return "発想を広げる";
+    }
+
+    function guideLeadFor(type) {
+      if (type === "bigUse") return "大マンダラの周囲8セルに、入口候補をヒントとして出します。";
+      if (type === "bigIdea") return "中央テーマを分解する切り口を、元番地横のヒントとして出します。";
+      if (type === "smallPerspective") return "この小マンダラの周囲8セルに、観点候補をヒントとして出します。";
+      return "この入口テーマを別方向へ広げる切り口を、元番地横のヒントとして出します。";
+    }
+
+    function guideAppliesAsHint(type) {
+      return true;
+    }
+
+    function renderGuide() {
+      if (!guideState) return;
+      const sets = GUIDE_SETS[guideState.type] || [];
+      els.guideTitle.textContent = guideTitleFor(guideState.type);
+      els.guideLead.textContent = guideLeadFor(guideState.type);
+      els.guideNote.textContent = "候補は本文には入れず、元番地横のヒントとして表示します。必要に応じて書き換えてから反映できます。";
+      els.guideOptions.innerHTML = "";
+      sets.forEach(set => {
+        const button = document.createElement("button");
+        button.className = `btn${set.name === guideState.selectedName ? " active" : ""}`;
+        button.type = "button";
+        button.textContent = set.name;
+        setButtonTooltip(button, "この候補セットを下の8つのヒント欄に表示します。");
+        button.addEventListener("click", () => {
+          guideState.selectedName = set.name;
+          guideState.items = [...set.items];
+          renderGuide();
+        });
+        els.guideOptions.appendChild(button);
+      });
+      els.guidePreview.innerHTML = "";
+      guideState.items.forEach((text, index) => {
+        const item = document.createElement("li");
+        const label = document.createElement("label");
+        label.textContent = `${index + 1}`;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = text;
+        input.addEventListener("input", event => {
+          guideState.items[index] = event.target.value;
+        });
+        label.appendChild(input);
+        item.appendChild(label);
+        els.guidePreview.appendChild(item);
+      });
+    }
+
+    function applyGuide(onlyEmpty) {
+      if (!guideState || !guideState.items.length) return;
+      rememberDataChange();
+      const items = guideState.items;
+      const field = guideAppliesAsHint(guideState.type) ? "hint" : "title";
+      if (guideState.type === "bigUse" || guideState.type === "bigIdea") {
+        OUTER_POSITIONS.forEach((position, index) => {
+          const block = data.blocks[data.blockLayout[position]];
+          if (!block) return;
+          if (onlyEmpty && ((block[field] || "").trim())) return;
+          block[field] = items[index] || "";
+        });
+      } else {
+        const block = data.blocks[guideState.blockId];
+        if (!block) return;
+        OUTER_POSITIONS.forEach((position, index) => {
+          const cell = block.cells[block.cellLayout[position]];
+          if (!cell) return;
+          if (onlyEmpty && ((cell[field] || "").trim())) return;
+          cell[field] = items[index] || "";
+        });
+      }
+      saveNow(true);
+      closeGuide();
+      render();
+      showToast(onlyEmpty ? "空欄にヒントを入れました" : "ヒントを入れ替えました");
+    }
+
+    function tsvEscape(value) {
+      const text = String(value ?? "");
+      return /["\t\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+    }
+
+    function htmlEscape(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      const area = document.createElement("textarea");
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok ? Promise.resolve() : Promise.reject();
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 1400);
+    }
+
+    function openManual() {
+      els.manualPanel.classList.add("open");
+      els.manualCloseBtn.focus();
+    }
+
+    function closeManual() {
+      els.manualPanel.classList.remove("open");
+      els.manualBtn.focus();
+    }
+
+    els.structureModeBtn.addEventListener("click", () => setMode("structure"));
+    els.wholeModeBtn.addEventListener("click", () => setMode("whole"));
+    els.undoBtn.addEventListener("click", undoChange);
+    els.redoBtn.addEventListener("click", redoChange);
+    els.arrangeBtn.addEventListener("click", toggleArrange);
+    els.copySheetBtn.addEventListener("click", copyForSheet);
+    els.exportJsonBtn.addEventListener("click", exportJson);
+    els.printBtn.addEventListener("click", openPrintPanel);
+    els.manualBtn.addEventListener("click", openManual);
+    els.manualCloseBtn.addEventListener("click", closeManual);
+    els.manualPanel.addEventListener("click", event => {
+      if (event.target === els.manualPanel) closeManual();
+    });
+    els.guideCloseBtn.addEventListener("click", closeGuide);
+    els.guideFillEmptyBtn.addEventListener("click", () => applyGuide(true));
+    els.guideReplaceAllBtn.addEventListener("click", () => applyGuide(false));
+    els.guidePanel.addEventListener("click", event => {
+      if (event.target === els.guidePanel) closeGuide();
+    });
+    els.printCloseBtn.addEventListener("click", closePrintPanel);
+    els.printBigBtn.addEventListener("click", () => printSheet("big"));
+    els.printSmallBtn.addEventListener("click", () => printSheet("small"));
+    els.printWholeBtn.addEventListener("click", () => printSheet("whole"));
+    els.printPanel.addEventListener("click", event => {
+      if (event.target === els.printPanel) closePrintPanel();
+    });
+    els.backBtn.addEventListener("click", () => {
+      ui.activeView = "big";
+      ui.activeBlockId = null;
+      ui.selected = { kind: "theme" };
+      ui.arrangeSource = null;
+      render();
+    });
+    els.resetBtn.addEventListener("click", resetData);
+    els.selectedTitle.addEventListener("input", event => {
+      const target = getSelectedTarget();
+      target.object.title = event.target.value;
+      scheduleSave();
+      renderProgress();
+      refreshVisibleSelectedTitle(event.target.value);
+    });
+    els.selectedNote.addEventListener("input", event => {
+      const target = getSelectedTarget();
+      rememberDataChange();
+      target.object.note = event.target.value;
+      scheduleSave();
+      renderProgress();
+    });
+    els.importJsonInput.addEventListener("change", event => {
+      const file = event.target.files[0];
+      if (file) importJson(file);
+      event.target.value = "";
+    });
+    els.importSheetPasteBtn.addEventListener("click", importSheetPaste);
+    window.addEventListener("beforeprint", preparePrintView);
+    window.addEventListener("afterprint", finishPrintView);
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape" && els.manualPanel.classList.contains("open")) closeManual();
+      if (event.key === "Escape" && els.guidePanel.classList.contains("open")) closeGuide();
+      if (event.key === "Escape" && els.printPanel.classList.contains("open")) closePrintPanel();
+      const isModifier = event.ctrlKey || event.metaKey;
+      if (!isModifier) return;
+      const key = event.key.toLowerCase();
+      if (key === "z" && !event.shiftKey) {
+        event.preventDefault();
+        undoChange();
+      }
+      if (key === "y" || (key === "z" && event.shiftKey)) {
+        event.preventDefault();
+        redoChange();
+      }
+    });
+    window.addEventListener("beforeunload", () => saveNow(true));
+
+    render();
+    showToast("前回の続きから始めます");
+  </script>
+</body>
+</html>
