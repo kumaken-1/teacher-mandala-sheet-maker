@@ -1516,6 +1516,11 @@
       "bottomLeft", "bottom", "bottomRight"
     ];
     const OUTER_POSITIONS = POSITIONS_3X3.filter(position => position !== "center");
+    // 時計回りの番号順（上→右上→右→右下→下→左下→左→左上）。○数字とヒントの並びをこれに統一する。
+    const CLOCKWISE_POSITIONS = [
+      "top", "topRight", "right", "bottomRight",
+      "bottom", "bottomLeft", "left", "topLeft"
+    ];
     const POSITION_LABELS = {
       topLeft: "左上",
       top: "上",
@@ -1688,7 +1693,7 @@
         const cellLayout = {};
         const blockNumber = blockId.replace("block-", "");
         const originalLabel = BLOCK_NUMERALS[index];
-        OUTER_POSITIONS.forEach((position, cellIndex) => {
+        CLOCKWISE_POSITIONS.forEach((position, cellIndex) => {
           const cellId = `${blockId}-cell-${String(cellIndex + 1).padStart(3, "0")}`;
           cellLayout[position] = cellId;
           cells[cellId] = {
@@ -1778,7 +1783,11 @@
           if (!cell.id) cell.id = cellId;
           if (!cell.originPosition) cell.originPosition = position;
           migrateGuideHint(cell);
-          if (!cell.originalLabel) {
+          // ○数字を時計回りに統一。元番地（originPosition）から番号を振り直す。
+          const cwIndex = CLOCKWISE_POSITIONS.indexOf(cell.originPosition);
+          if (cwIndex >= 0) {
+            cell.originalLabel = `${normalized.blocks[blockId].originalLabel || ""}-${cwIndex + 1}`;
+          } else if (!cell.originalLabel) {
             const sourceIndex = OUTER_POSITIONS.indexOf(cell.originPosition);
             cell.originalLabel = `${normalized.blocks[blockId].originalLabel || ""}-${sourceIndex + 1}`;
           }
@@ -3068,14 +3077,14 @@
       const items = guideState.items;
       const field = guideAppliesAsHint(guideState.type) ? "hint" : "title";
 
-      // 反映先の8つ（大マンダラの周囲ブロック or 小マンダラの周囲セル）を集める
+      // 反映先の8つを「時計回りの番号順（①→⑧）」で集める。候補1番目が①に入る。
       let targets = [];
       if (guideState.type === "bigUse" || guideState.type === "bigIdea") {
-        targets = OUTER_POSITIONS.map(position => data.blocks[data.blockLayout[position]]);
+        targets = CLOCKWISE_POSITIONS.map(position => data.blocks[data.blockLayout[position]]);
       } else {
         const block = data.blocks[guideState.blockId];
         if (!block) return;
-        targets = OUTER_POSITIONS.map(position => block.cells[block.cellLayout[position]]);
+        targets = CLOCKWISE_POSITIONS.map(position => block.cells[block.cellLayout[position]]);
       }
 
       // まだ書き換えず、実際に変わるものだけを先に洗い出す
@@ -3180,7 +3189,7 @@
       const set = (GUIDE_SETS.bigUse || []).find(item => item.name === setName);
       if (!set) return;
       rememberDataChange();
-      OUTER_POSITIONS.forEach((position, index) => {
+      CLOCKWISE_POSITIONS.forEach((position, index) => {
         const block = data.blocks[data.blockLayout[position]];
         if (block) block.hint = set.items[index] || "";
       });
