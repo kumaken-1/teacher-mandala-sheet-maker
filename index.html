@@ -702,6 +702,35 @@
     .manual-overlay.open {
       display: flex;
     }
+    /* ガイドだけは、シートを見ながら使えるよう右にドッキングする非ブロッキング表示 */
+    .guide-overlay.open {
+      display: block;
+      inset: auto;
+      top: 64px;
+      right: 16px;
+      bottom: 16px;
+      left: auto;
+      width: min(380px, 92vw);
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+    }
+    .guide-overlay .manual-dialog {
+      width: 100%;
+      max-height: 100%;
+      pointer-events: auto;
+      box-shadow: 0 18px 50px rgba(37, 49, 44, .30);
+    }
+    @media (max-width: 900px) {
+      .guide-overlay.open {
+        top: auto;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        width: auto;
+        max-height: 70vh;
+      }
+    }
 
     .manual-dialog {
       width: min(920px, 100%);
@@ -920,6 +949,224 @@
       }
     }
 
+    .app-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--warn);
+      border-top: 1px solid var(--line);
+      color: #6b5a1f;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .app-footer strong {
+      font-weight: 900;
+    }
+
+    .onboard-banner {
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border: 1px solid #d8b98f;
+      border-radius: 10px;
+      background: var(--accent-soft);
+    }
+
+    .onboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .onboard-head strong {
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    .onboard-close {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font-size: 20px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .onboard-close:hover {
+      background: rgba(164, 95, 42, .12);
+    }
+
+    .onboard-lead {
+      margin: 6px 0 10px;
+      color: #6b4a25;
+      font-size: 12px;
+    }
+
+    .onboard-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .onboard-option {
+      border: 1px solid #d8b98f;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--accent);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .onboard-option:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .breadcrumb {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .breadcrumb .crumb-sep {
+      margin: 0 6px;
+      opacity: .6;
+    }
+
+    .breadcrumb .crumb-current {
+      color: var(--text);
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 4px 0 12px;
+    }
+
+    .step-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .step-item .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--line);
+      color: #fff;
+      font-size: 11px;
+    }
+
+    .step-item.current {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .step-item.current .step-num {
+      background: var(--accent);
+    }
+
+    .step-item.done {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: #0f4f39;
+    }
+
+    .step-item.done .step-num {
+      background: var(--primary);
+    }
+
+    .step-item .step-count {
+      font-size: 11px;
+      opacity: .9;
+    }
+
+    .step-arrow {
+      color: var(--muted);
+      opacity: .6;
+      font-weight: 800;
+    }
+
+    .editor-identity {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .editor-identity strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .editor-field {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .editor-field-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .editor-field-sub {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .editor-field textarea,
+    .editor-field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+      color: var(--text);
+      resize: vertical;
+    }
+
+    .editor-field textarea:focus,
+    .editor-field input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .editor-tip {
+      margin: -4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
     @media print {
       @page {
         size: A4 landscape;
@@ -933,7 +1180,11 @@
       .app-header,
       .side,
       .view-head,
+      .breadcrumb,
+      .step-indicator,
+      .onboard-banner,
       .manual-overlay,
+      .app-footer,
       .toast {
         display: none !important;
       }
@@ -1023,6 +1274,7 @@
       <div class="tool-group" aria-label="保存と管理">
         <span class="tool-label">保存</span>
         <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
+        <button class="btn" id="exportTemplateBtn" type="button" data-tooltip="本文を空にし、ヒント・配置・色だけを残したテンプレートを保存します。来年・別単元で使い回せます。">テンプレート保存</button>
         <button class="btn" id="resetBtn" type="button" data-tooltip="入力内容と配置を初期状態に戻します。">初期化</button>
       </div>
       <div class="tool-group" aria-label="ヘルプ">
@@ -1035,6 +1287,15 @@
   <main class="shell">
     <section class="workspace">
       <div class="canvas-panel">
+        <div class="onboard-banner" id="onboardBanner" hidden>
+          <div class="onboard-head">
+            <strong>何のためのマンダラ？</strong>
+            <button class="onboard-close" id="onboardCloseBtn" type="button" aria-label="閉じる">×</button>
+          </div>
+          <p class="onboard-lead">選ぶと、まわり8マスに考える入口のヒントが入ります。あとで中央の「用途」からいつでも変えられます。</p>
+          <div class="onboard-options" id="onboardOptions"></div>
+        </div>
+        <nav class="breadcrumb" id="breadcrumb" aria-label="現在地">大マンダラ</nav>
         <div class="view-head">
           <div class="view-title">
             <h1 id="viewTitle">大マンダラ</h1>
@@ -1045,17 +1306,48 @@
             <button class="btn" id="backBtn" type="button" hidden data-tooltip="開いている小マンダラから大マンダラへ戻ります。">大マンダラへ戻る</button>
           </div>
         </div>
+        <div class="step-indicator" id="stepIndicator" aria-label="作成の進み具合">
+          <div class="step-item" id="step1">
+            <span class="step-num">1</span>
+            <span class="step-text">テーマ</span>
+          </div>
+          <span class="step-arrow">→</span>
+          <div class="step-item" id="step2">
+            <span class="step-num">2</span>
+            <span class="step-text">入口</span>
+            <span class="step-count" id="stepCount2"></span>
+          </div>
+          <span class="step-arrow">→</span>
+          <div class="step-item" id="step3">
+            <span class="step-num">3</span>
+            <span class="step-text">各マス</span>
+            <span class="step-count" id="stepCount3"></span>
+          </div>
+        </div>
         <div class="arrange-banner" id="arrangeStatus" role="status" aria-live="polite"></div>
         <div id="grid" class="grid three"></div>
       </div>
     </section>
 
     <aside class="side">
+      <section class="side-panel editor-panel" id="editorPanel">
+        <h2>選択中のマス</h2>
+        <p class="editor-identity" id="editorIdentity"></p>
+        <label class="editor-field">
+          <span class="editor-field-label">本文</span>
+          <textarea id="editorBody" rows="3" placeholder="このマスに書く内容"></textarea>
+        </label>
+        <label class="editor-field" id="editorHintField">
+          <span class="editor-field-label">ヒント<span class="editor-field-sub">元番地の横に薄く表示。本文には入りません。</span></span>
+          <input id="editorHint" type="text" placeholder="例: 中心発問">
+        </label>
+        <p class="editor-tip" id="editorHintEmptyTip" hidden>ヒントを空にすると、このマスのヒント表示は消えます。</p>
+      </section>
       <section class="side-panel">
         <h2>読み込み</h2>
-        <p>JSONは配置やヒントまで復元します。スプシ貼り付けは、表に見えている9×9の内容を取り込みます。</p>
+        <p>JSONは配置やヒントまで復元します。テンプレート（_template.json）を選ぶと、本文は空・ヒント入りの新しいシートとして始まります。スプシ貼り付けは、表に見えている9×9の内容を取り込みます。</p>
         <div class="load-group">
-          <h3>JSONファイル</h3>
+          <h3>JSONファイル / テンプレート</h3>
           <input class="file-input" id="importJsonInput" type="file" accept="application/json,.json">
         </div>
         <div class="load-group">
@@ -1066,6 +1358,10 @@
       </section>
     </aside>
   </main>
+
+  <footer class="app-footer">
+    <strong>⚠</strong> 児童名・保護者名・成績・健康情報などの個人情報は書かないでください
+  </footer>
 
   <div class="hidden-controls" aria-hidden="true">
     <h2 id="editorTitle">選択中</h2>
@@ -1165,7 +1461,7 @@
     </div>
   </div>
 
-  <div class="manual-overlay" id="guidePanel" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+  <div class="manual-overlay guide-overlay" id="guidePanel" role="dialog" aria-labelledby="guideTitle">
     <div class="manual-dialog">
       <div class="manual-head">
         <h2 id="guideTitle">ガイド</h2>
@@ -1307,11 +1603,28 @@
       arrangeBtn: document.getElementById("arrangeBtn"),
       copySheetBtn: document.getElementById("copySheetBtn"),
       exportJsonBtn: document.getElementById("exportJsonBtn"),
+      exportTemplateBtn: document.getElementById("exportTemplateBtn"),
       printBtn: document.getElementById("printBtn"),
       manualBtn: document.getElementById("manualBtn"),
       backBtn: document.getElementById("backBtn"),
       resetBtn: document.getElementById("resetBtn"),
       grid: document.getElementById("grid"),
+      onboardBanner: document.getElementById("onboardBanner"),
+      onboardOptions: document.getElementById("onboardOptions"),
+      onboardCloseBtn: document.getElementById("onboardCloseBtn"),
+      editorPanel: document.getElementById("editorPanel"),
+      editorIdentity: document.getElementById("editorIdentity"),
+      editorBody: document.getElementById("editorBody"),
+      editorHint: document.getElementById("editorHint"),
+      editorHintField: document.getElementById("editorHintField"),
+      editorHintEmptyTip: document.getElementById("editorHintEmptyTip"),
+      breadcrumb: document.getElementById("breadcrumb"),
+      stepIndicator: document.getElementById("stepIndicator"),
+      step1: document.getElementById("step1"),
+      step2: document.getElementById("step2"),
+      step3: document.getElementById("step3"),
+      stepCount2: document.getElementById("stepCount2"),
+      stepCount3: document.getElementById("stepCount3"),
       viewTitle: document.getElementById("viewTitle"),
       viewLead: document.getElementById("viewLead"),
       editorTitle: document.getElementById("editorTitle"),
@@ -1520,9 +1833,54 @@
       else renderBigView();
 
       renderEditor();
+      renderCellEditor();
+      refreshSelectedHighlight();
       renderArrangeStatus();
       renderProgress();
+      renderBreadcrumb();
+      renderSteps();
       renderHistoryButtons();
+    }
+
+    function renderBreadcrumb() {
+      if (!els.breadcrumb) return;
+      const sep = '<span class="crumb-sep">›</span>';
+      let html;
+      if (ui.mode === "whole" || ui.mode === "print") {
+        html = '<span class="crumb-current">9×9全体</span>';
+      } else if (ui.activeView === "small" && data.blocks[ui.activeBlockId]) {
+        const block = data.blocks[ui.activeBlockId];
+        const title = (block.title || "").trim();
+        const name = `${block.originalLabel || ""}${title ? " " + title : ""}`.trim() || "小マンダラ";
+        html = `大マンダラ${sep}<span class="crumb-current">${htmlEscape(name)}</span>`;
+      } else {
+        html = '<span class="crumb-current">大マンダラ</span>';
+      }
+      els.breadcrumb.innerHTML = html;
+    }
+
+    function setStep(el, isDone, isCurrent) {
+      if (!el) return;
+      el.classList.toggle("done", Boolean(isDone));
+      el.classList.toggle("current", Boolean(isCurrent && !isDone));
+    }
+
+    function renderSteps() {
+      if (!els.stepIndicator) return;
+      const themeFilled = (data.centerTheme.title || "").trim().length > 0;
+      let doneBlocks = 0;
+      let doneCells = 0;
+      OUTER_POSITIONS.forEach(position => {
+        const block = data.blocks[data.blockLayout[position]];
+        if (!block) return;
+        if ((block.title || "").trim()) doneBlocks += 1;
+        doneCells += countFilledCells(block);
+      });
+      setStep(els.step1, themeFilled, !themeFilled);
+      setStep(els.step2, doneBlocks === 8, themeFilled && doneBlocks < 8);
+      setStep(els.step3, doneCells === 64, doneBlocks > 0 && doneCells < 64);
+      els.stepCount2.textContent = `${doneBlocks}/8`;
+      els.stepCount3.textContent = `${doneCells}個`;
     }
 
     function renderBigView() {
@@ -1647,6 +2005,8 @@
         updateItemTitle(item, event.target.value);
         scheduleSave();
         renderProgress();
+        renderSteps();
+        renderBreadcrumb();
       });
       tile.appendChild(input);
       appendIdentityBadge(tile, item);
@@ -1740,6 +2100,8 @@
         updateItemTitle(item, event.target.value);
         scheduleSave();
         renderProgress();
+        renderSteps();
+        renderBreadcrumb();
       });
       tile.appendChild(input);
       appendIdentityBadge(tile, item);
@@ -1817,6 +2179,8 @@
       if (item.kind === "block") ui.selected = { kind: "block", blockId: item.blockId || item.id };
       if (item.kind === "cell") ui.selected = { kind: "cell", blockId: item.blockId, cellId: item.cellId || item.id };
       renderEditor();
+      renderCellEditor();
+      refreshSelectedHighlight();
     }
 
     function isSelected(item) {
@@ -1837,6 +2201,7 @@
     function syncEditorTitle(value) {
       const active = document.activeElement;
       if (active !== els.selectedTitle) els.selectedTitle.value = value;
+      if (els.editorBody && active !== els.editorBody) els.editorBody.value = value;
     }
 
     function refreshVisibleSelectedTitle(value) {
@@ -1863,6 +2228,59 @@
       els.identityPanel.innerHTML = target.identity.map(row => `<div><strong>${htmlEscape(row.label)}</strong>: ${htmlEscape(row.value)}</div>`).join("");
       els.selectedTitle.value = target.object.title || "";
       els.selectedNote.value = target.object.note || "";
+    }
+
+    function renderCellEditor() {
+      if (!els.editorPanel) return;
+      const target = getSelectedTarget();
+      if (!target) return;
+      const active = document.activeElement;
+      els.editorIdentity.innerHTML = target.identity
+        .filter(row => row.label === "種別" || row.label === "元番地" || row.label === "現在位置")
+        .map(row => `<span><strong>${htmlEscape(row.label)}</strong> ${htmlEscape(row.value)}</span>`)
+        .join("");
+      if (active !== els.editorBody) els.editorBody.value = target.object.title || "";
+
+      // ヒントは小マンダラ（入口）とセルにだけ表示。中央テーマには出さない。
+      const supportsHint = ui.selected.kind === "block" || ui.selected.kind === "cell";
+      els.editorHintField.style.display = supportsHint ? "" : "none";
+      if (supportsHint && active !== els.editorHint) {
+        els.editorHint.value = target.object.hint || "";
+      }
+    }
+
+    function selectedTileSelector() {
+      if (ui.selected.kind === "theme") return '.tile[data-item-kind="theme"]';
+      if (ui.selected.kind === "block") return `.tile[data-item-kind="block"][data-block-id="${ui.selected.blockId}"]`;
+      if (ui.selected.kind === "cell") return `.tile[data-item-kind="cell"][data-cell-id="${ui.selected.cellId}"]`;
+      return "";
+    }
+
+    function refreshSelectedHighlight() {
+      document.querySelectorAll('#grid .tile.selected').forEach(tile => tile.classList.remove("selected"));
+      const selector = selectedTileSelector();
+      if (!selector) return;
+      document.querySelectorAll(`#grid ${selector}`).forEach(tile => tile.classList.add("selected"));
+    }
+
+    function refreshSelectedHint(value) {
+      const selector = selectedTileSelector();
+      if (!selector) return;
+      document.querySelectorAll(`#grid ${selector}`).forEach(tile => {
+        const badge = tile.querySelector(".tile-id");
+        if (!badge) return;
+        let hintEl = badge.querySelector(".tile-hint");
+        if (value) {
+          if (!hintEl) {
+            hintEl = document.createElement("span");
+            hintEl.className = "tile-hint";
+            badge.appendChild(hintEl);
+          }
+          hintEl.textContent = value;
+        } else if (hintEl) {
+          hintEl.remove();
+        }
+      });
     }
 
     function getSelectedTarget() {
@@ -2301,20 +2719,53 @@
       return `<table style="border-collapse:collapse;table-layout:fixed;">${rows}</table>`;
     }
 
-    function exportJson() {
-      const fileBaseName = getFileBaseName();
-      saveNow(true);
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json;charset=utf-8" });
+    function downloadJsonFile(payload, fileName) {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const safeTitle = fileBaseName.replace(/[\\/:*?"<>|]/g, "_");
       link.href = url;
-      link.download = `${safeTitle}.json`;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+    }
+
+    function exportJson() {
+      const safeTitle = getFileBaseName().replace(/[\\/:*?"<>|]/g, "_");
+      saveNow(true);
+      downloadJsonFile(data, `${safeTitle}.json`);
       showToast("ファイルを保存しました");
+    }
+
+    // 本文（title/note）だけを空にする。ヒント・配置・色・元番地は残す。
+    function clearBodies(target) {
+      target.centerTheme.title = "";
+      target.centerTheme.note = "";
+      Object.values(target.blocks).forEach(block => {
+        block.title = "";
+        block.note = "";
+        Object.values(block.cells).forEach(cell => {
+          cell.title = "";
+          cell.note = "";
+        });
+      });
+    }
+
+    // 本文を空にし、ヒント・配置・色・元番地だけを残したテンプレートを作る
+    function buildTemplateData() {
+      const clone = JSON.parse(JSON.stringify(data));
+      clearBodies(clone);
+      clone.mandalaTemplate = true;
+      clone.updatedAt = new Date().toISOString();
+      return clone;
+    }
+
+    function exportTemplate() {
+      const safeTitle = getFileBaseName().replace(/[\\/:*?"<>|]/g, "_");
+      saveNow(true);
+      downloadJsonFile(buildTemplateData(), `${safeTitle}_template.json`);
+      showToast("テンプレートを保存しました（本文は空・ヒントを保持）");
     }
 
     function getFileBaseName() {
@@ -2326,12 +2777,20 @@
       const reader = new FileReader();
       reader.onload = () => {
         try {
+          const parsed = JSON.parse(reader.result);
+          const isTemplate = parsed && parsed.mandalaTemplate === true;
           rememberDataChange();
-          data = normalizeData(JSON.parse(reader.result));
+          data = normalizeData(parsed);
+          if (isTemplate) {
+            clearBodies(data);            // 本文は空・ヒントは維持
+            delete data.mandalaTemplate;  // 以後は通常のシートとして扱う
+          }
           ui = createUiState();
           saveNow(true);
           render();
-          showToast("JSONを読み込みました");
+          showToast(isTemplate
+            ? "テンプレートから新しいシートを作りました（ヒント入り・本文は空）"
+            : "JSONを読み込みました");
         } catch (error) {
           showToast("JSONを読み込めませんでした");
         }
@@ -2606,30 +3065,46 @@
 
     function applyGuide(onlyEmpty) {
       if (!guideState || !guideState.items.length) return;
-      rememberDataChange();
       const items = guideState.items;
       const field = guideAppliesAsHint(guideState.type) ? "hint" : "title";
+
+      // 反映先の8つ（大マンダラの周囲ブロック or 小マンダラの周囲セル）を集める
+      let targets = [];
       if (guideState.type === "bigUse" || guideState.type === "bigIdea") {
-        OUTER_POSITIONS.forEach((position, index) => {
-          const block = data.blocks[data.blockLayout[position]];
-          if (!block) return;
-          if (onlyEmpty && ((block[field] || "").trim())) return;
-          block[field] = items[index] || "";
-        });
+        targets = OUTER_POSITIONS.map(position => data.blocks[data.blockLayout[position]]);
       } else {
         const block = data.blocks[guideState.blockId];
         if (!block) return;
-        OUTER_POSITIONS.forEach((position, index) => {
-          const cell = block.cells[block.cellLayout[position]];
-          if (!cell) return;
-          if (onlyEmpty && ((cell[field] || "").trim())) return;
-          cell[field] = items[index] || "";
-        });
+        targets = OUTER_POSITIONS.map(position => block.cells[block.cellLayout[position]]);
       }
+
+      // まだ書き換えず、実際に変わるものだけを先に洗い出す
+      const plan = [];
+      targets.forEach((target, index) => {
+        if (!target) return;
+        if (onlyEmpty && (target[field] || "").trim()) return;   // 空欄だけ：埋まっていれば触らない
+        const next = items[index] || "";
+        if ((target[field] || "") === next) return;              // 同じ内容なら変更なし
+        plan.push({ target, next });
+      });
+
+      // 1件も変わらないときは、黙って成功にせず案内する
+      if (plan.length === 0) {
+        showToast(onlyEmpty
+          ? "すでにヒントがあります。差し替えるなら「ヒントをすべて更新」を押してください"
+          : "ヒントは変わりませんでした");
+        return;
+      }
+
+      rememberDataChange();                                       // 変更前の状態を記録（戻す用）
+      plan.forEach(({ target, next }) => { target[field] = next; });
+      const changed = plan.length;
       saveNow(true);
       closeGuide();
       render();
-      showToast(onlyEmpty ? "空欄にヒントを入れました" : "ヒントを入れ替えました");
+      showToast(onlyEmpty
+        ? `空欄に${changed}個のヒントを入れました`
+        : `ヒントを入れ替えました（${changed}個）`);
     }
 
     function tsvEscape(value) {
@@ -2673,6 +3148,62 @@
       els.manualBtn.focus();
     }
 
+    // ─── 目的オンボーディング（初回バナー） ───────────────
+    const ONBOARD_KEY = "teacher_mandala_onboarded_v1";
+
+    function isSheetEmpty() {
+      if ((data.centerTheme.title || "").trim() || (data.centerTheme.note || "").trim()) return false;
+      return Object.values(data.blocks).every(block => {
+        if ((block.title || "").trim() || (block.note || "").trim() || (block.hint || "").trim()) return false;
+        return Object.values(block.cells).every(cell =>
+          !((cell.title || "").trim() || (cell.note || "").trim() || (cell.hint || "").trim()));
+      });
+    }
+
+    function renderOnboardingOptions() {
+      els.onboardOptions.innerHTML = "";
+      (GUIDE_SETS.bigUse || []).forEach(set => {
+        const btn = document.createElement("button");
+        btn.className = "onboard-option";
+        btn.type = "button";
+        btn.textContent = set.name;
+        btn.addEventListener("click", () => {
+          applyOnboardingPreset(set.name);
+          dismissOnboarding();
+          showToast(set.name === "無地" ? "無地で始めます" : `${set.name}のヒントを入れました`);
+        });
+        els.onboardOptions.appendChild(btn);
+      });
+    }
+
+    function applyOnboardingPreset(setName) {
+      const set = (GUIDE_SETS.bigUse || []).find(item => item.name === setName);
+      if (!set) return;
+      rememberDataChange();
+      OUTER_POSITIONS.forEach((position, index) => {
+        const block = data.blocks[data.blockLayout[position]];
+        if (block) block.hint = set.items[index] || "";
+      });
+      saveNow(true);
+      render();
+    }
+
+    function maybeShowOnboarding() {
+      if (!els.onboardBanner) return;
+      const done = localStorage.getItem(ONBOARD_KEY);
+      if (!done && isSheetEmpty()) {
+        renderOnboardingOptions();
+        els.onboardBanner.hidden = false;
+      } else {
+        els.onboardBanner.hidden = true;
+      }
+    }
+
+    function dismissOnboarding() {
+      localStorage.setItem(ONBOARD_KEY, "1");
+      els.onboardBanner.hidden = true;
+    }
+
     els.structureModeBtn.addEventListener("click", () => setMode("structure"));
     els.wholeModeBtn.addEventListener("click", () => setMode("whole"));
     els.undoBtn.addEventListener("click", undoChange);
@@ -2680,6 +3211,7 @@
     els.arrangeBtn.addEventListener("click", toggleArrange);
     els.copySheetBtn.addEventListener("click", copyForSheet);
     els.exportJsonBtn.addEventListener("click", exportJson);
+    els.exportTemplateBtn.addEventListener("click", exportTemplate);
     els.printBtn.addEventListener("click", openPrintPanel);
     els.manualBtn.addEventListener("click", openManual);
     els.manualCloseBtn.addEventListener("click", closeManual);
@@ -2721,12 +3253,34 @@
       scheduleSave();
       renderProgress();
     });
+    els.editorBody.addEventListener("input", event => {
+      const target = getSelectedTarget();
+      if (!target) return;
+      rememberDataChange();
+      target.object.title = event.target.value;
+      scheduleSave();
+      renderProgress();
+      renderSteps();
+      refreshVisibleSelectedTitle(event.target.value);
+      renderBreadcrumb();
+      syncEditorTitle(event.target.value);
+    });
+    els.editorHint.addEventListener("input", event => {
+      if (!(ui.selected.kind === "block" || ui.selected.kind === "cell")) return;
+      const target = getSelectedTarget();
+      if (!target) return;
+      rememberDataChange();
+      target.object.hint = event.target.value;
+      scheduleSave();
+      refreshSelectedHint(event.target.value);
+    });
     els.importJsonInput.addEventListener("change", event => {
       const file = event.target.files[0];
       if (file) importJson(file);
       event.target.value = "";
     });
     els.importSheetPasteBtn.addEventListener("click", importSheetPaste);
+    els.onboardCloseBtn.addEventListener("click", dismissOnboarding);
     window.addEventListener("beforeprint", preparePrintView);
     window.addEventListener("afterprint", finishPrintView);
     window.addEventListener("keydown", event => {
@@ -2748,7 +3302,8 @@
     window.addEventListener("beforeunload", () => saveNow(true));
 
     render();
-    showToast("前回の続きから始めます");
+    maybeShowOnboarding();
+    if (els.onboardBanner.hidden) showToast("前回の続きから始めます");
   </script>
 </body>
 </html>
