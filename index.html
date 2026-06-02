@@ -186,6 +186,17 @@
       color: #fff;
     }
 
+    .channel-btn {
+      min-width: 34px;
+      padding: 0 10px;
+    }
+
+    .channel-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
     .btn:disabled {
       cursor: not-allowed;
       opacity: .52;
@@ -1275,6 +1286,12 @@
       <span>3×3で構造を作り、9×9で全体を整える</span>
     </div>
     <div class="toolbar" aria-label="操作ボタン">
+      <div class="tool-group" aria-label="チャンネル">
+        <span class="tool-label">チャンネル</span>
+        <button class="btn channel-btn active" id="chBtnA" data-channel="A" type="button" data-tooltip="チャンネルA。3つのマンダラを切り替えて使えます。それぞれ自動保存されるので、保存し直す必要はありません。">A</button>
+        <button class="btn channel-btn" id="chBtnB" data-channel="B" type="button" data-tooltip="チャンネルB。試し書きや別案に。自動保存されます。">B</button>
+        <button class="btn channel-btn" id="chBtnC" data-channel="C" type="button" data-tooltip="チャンネルC。試し書きや別案に。自動保存されます。">C</button>
+      </div>
       <div class="tool-group" aria-label="表示切替">
         <span class="tool-label">表示</span>
         <button class="btn active" id="structureModeBtn" type="button" data-tooltip="大マンダラと小マンダラを3×3で編集します。">3×3編集</button>
@@ -1473,6 +1490,10 @@
           </ul>
         </section>
         <section class="manual-section">
+          <h3>3つのチャンネル（A・B・C）</h3>
+          <p>右上の「チャンネル」で、A・B・Cの3つのマンダラを切り替えて使えます。それぞれが自動保存されるので、保存し直す必要はありません。本命をA、試し書きや別案をB・Cに、というように使い分けられます。切り替えても、それぞれの内容はそのまま残ります。1台のブラウザの中だけの保存なので、正式に残すときは「ファイル保存」も使ってください。</p>
+        </section>
+        <section class="manual-section">
           <h3>迷ったとき</h3>
           <ul>
             <li>最初から自由に作りたいときは、大マンダラの「用途」で「無地」を選びます。</li>
@@ -1534,6 +1555,20 @@
 
   <script>
     const STORAGE_KEY = "teacher_mandala_state_v1";
+    // 3つのチャンネル（A・B・C）。それぞれ独立に自動保存される。Aは既存キーを引き継ぐ。
+    const CHANNELS = ["A", "B", "C"];
+    const CHANNEL_STORAGE = {
+      A: STORAGE_KEY,
+      B: "teacher_mandala_state_v1__B",
+      C: "teacher_mandala_state_v1__C"
+    };
+    const CHANNEL_KEY = "teacher_mandala_channel_v1"; // 最後に使ったチャンネルを記憶
+    let currentChannel = (() => {
+      try {
+        const saved = localStorage.getItem(CHANNEL_KEY);
+        return CHANNELS.includes(saved) ? saved : "A";
+      } catch (e) { return "A"; }
+    })();
     const POSITIONS_3X3 = [
       "topLeft", "top", "topRight",
       "left", "center", "right",
@@ -1625,6 +1660,9 @@
     };
 
     const els = {
+      chBtnA: document.getElementById("chBtnA"),
+      chBtnB: document.getElementById("chBtnB"),
+      chBtnC: document.getElementById("chBtnC"),
       structureModeBtn: document.getElementById("structureModeBtn"),
       wholeModeBtn: document.getElementById("wholeModeBtn"),
       undoBtn: document.getElementById("undoBtn"),
@@ -1763,7 +1801,7 @@
 
     function loadData() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(CHANNEL_STORAGE[currentChannel]);
         if (!raw) return createBlankData();
         return normalizeData(JSON.parse(raw));
       } catch (error) {
@@ -1840,9 +1878,30 @@
     function saveNow(silent = false) {
       data.title = data.centerTheme.title || "";
       data.updatedAt = new Date().toISOString();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(CHANNEL_STORAGE[currentChannel], JSON.stringify(data));
       renderProgress();
       if (!silent) showToast("保存しました");
+    }
+
+    function renderChannelBar() {
+      CHANNELS.forEach(channel => {
+        const btn = els["chBtn" + channel];
+        if (btn) btn.classList.toggle("active", channel === currentChannel);
+      });
+    }
+
+    function switchChannel(channel) {
+      if (!CHANNELS.includes(channel) || channel === currentChannel) return;
+      saveNow(true);                       // いまのチャンネルを保存
+      currentChannel = channel;
+      try { localStorage.setItem(CHANNEL_KEY, channel); } catch (e) {}
+      data = loadData();                   // 切替先を読み込み（無ければ新規）
+      ui = createUiState();
+      undoSnapshot = null;
+      redoSnapshot = null;
+      render();
+      renderChannelBar();
+      showToast(`チャンネル${channel} に切りかえました`);
     }
 
     function scheduleSave() {
@@ -3237,6 +3296,10 @@
       els.onboardBanner.hidden = true;
     }
 
+    CHANNELS.forEach(channel => {
+      const btn = els["chBtn" + channel];
+      if (btn) btn.addEventListener("click", () => switchChannel(channel));
+    });
     els.structureModeBtn.addEventListener("click", () => setMode("structure"));
     els.wholeModeBtn.addEventListener("click", () => setMode("whole"));
     els.undoBtn.addEventListener("click", undoChange);
@@ -3335,8 +3398,9 @@
     window.addEventListener("beforeunload", () => saveNow(true));
 
     render();
+    renderChannelBar();
     maybeShowOnboarding();
-    if (els.onboardBanner.hidden) showToast("前回の続きから始めます");
+    if (els.onboardBanner.hidden) showToast(`前回の続きから始めます（チャンネル${currentChannel}）`);
   </script>
 </body>
 </html>
