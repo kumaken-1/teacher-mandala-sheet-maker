@@ -497,6 +497,25 @@
       border-color: rgba(37, 49, 44, .32);
     }
 
+    /* ヒントボタン（用途・発想・観点）は淡い黄色で他のボタンと区別する */
+    .mini-btn.guide-btn,
+    .tile.theme .mini-btn.guide-btn,
+    .tile.block .mini-btn.guide-btn {
+      background: var(--warn);
+      border-color: #e0c976;
+      color: #6b5a1f;
+    }
+
+    .mini-btn.guide-btn:hover,
+    .mini-btn.guide-btn:focus-visible,
+    .tile.theme .mini-btn.guide-btn:hover,
+    .tile.theme .mini-btn.guide-btn:focus-visible,
+    .tile.block .mini-btn.guide-btn:hover,
+    .tile.block .mini-btn.guide-btn:focus-visible {
+      background: #ffeeb0;
+      border-color: #cdb45a;
+    }
+
     .grid.nine .tile {
       border-radius: 5px;
       padding: 3px;
@@ -2070,7 +2089,7 @@
 
     function createGuideButton(label, guideType, item) {
       const button = document.createElement("button");
-      button.className = "mini-btn";
+      button.className = "mini-btn guide-btn";
       button.type = "button";
       button.textContent = label;
       setButtonTooltip(button, guideTooltip(label, guideType));
