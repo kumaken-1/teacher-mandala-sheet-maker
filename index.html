@@ -970,13 +970,6 @@
       gap: 8px;
     }
 
-    .guide-preview-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
     .outline-text {
       width: 100%;
       min-height: 300px;
@@ -1349,8 +1342,7 @@
       <div class="tool-group" aria-label="保存と管理">
         <span class="tool-label">保存</span>
         <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
-        <button class="btn" id="exportTemplateBtn" type="button" data-tooltip="本文を空にし、ヒント・配置・色だけを残して保存します。来年・別単元で使い回せます。">ヒント保存</button>
-        <button class="btn" id="resetBtn" type="button" data-tooltip="入力内容と配置を、最初の状態に戻します。">初期化（最初の状態にもどす）</button>
+        <button class="btn" id="resetBtn" type="button" data-tooltip="マンダラを全部消して、まっさらにします（確認2回）。">初期化（最初の状態にもどす）</button>
       </div>
       <div class="tool-group" aria-label="ヘルプ">
         <span class="tool-label">ヘルプ</span>
@@ -1528,7 +1520,8 @@
           <ul>
             <li><span class="manual-term">表示</span>：選んだ型のヒントを番地の右に出す。書いても消えない。</li>
             <li><span class="manual-term">候補の編集</span>：表示前に8つの候補をその場で書き換えられる。元の型は壊れない。</li>
-            <li><span class="manual-term">初期化</span>：編集した候補を、最初の提案に戻す。</li>
+            <li><span class="manual-term">ヒント保存</span>：本文を空にし、ヒント・配置・色だけを _template.json に保存する。来年・別単元で使い回せる。</li>
+            <li><span class="manual-term">ヒント初期化</span>：選んでいる型の元の8項目を、セルのヒントに入れ直す。編集・保存後でも最初の状態に戻せる。</li>
             <li><span class="manual-term">消す</span>：「無地」を選んで「表示」を押すとヒントが消える。</li>
           </ul>
           <div class="note">
@@ -1571,7 +1564,7 @@
             <tr><th>機能</th><th>何をするか</th><th>使う場面</th></tr>
             <tr><td>自動保存</td><td>同じ端末・ブラウザにチャンネルごとに自動保存。</td><td>前回の続きから。</td></tr>
             <tr><td>ファイル保存</td><td>内容をJSONファイルに書き出す。</td><td>正式に残す・別端末へ移す。</td></tr>
-            <tr><td>ヒント保存</td><td>本文を空にしてヒント・配置・色だけを残す（_template.json）。</td><td>来年・別単元で使い回す。</td></tr>
+            <tr><td>ヒント保存（ヒントパネル内）</td><td>本文を空にしてヒント・配置・色だけを残す（_template.json）。</td><td>来年・別単元で使い回す。</td></tr>
             <tr><td>読み込み</td><td>JSONを復元。テンプレートは本文空・ヒント入りで開く。スプシ貼り付けも。</td><td>続きを開く・型から始める。</td></tr>
             <tr><td>スプシにコピー</td><td>9×9を表として貼り付けられる形でコピー。</td><td>スプレッドシートで共有・印刷。</td></tr>
             <tr><td>箇条書きメモ化</td><td>入口を「1.」、その小マンダラを「・」にした箇条書きに。テーマが見出し、時計回り、空は省略。</td><td>授業案・通信・報告の下書きへ。</td></tr>
@@ -1631,15 +1624,14 @@
           <div class="guide-options" id="guideOptions"></div>
         </section>
         <section class="manual-section">
-          <div class="guide-preview-head">
-            <h3>入る候補（編集できます）</h3>
-            <button class="btn" id="guideResetBtn" type="button" data-tooltip="編集した候補を、最初の提案に戻します。">初期化</button>
-          </div>
+          <h3>入る候補（編集できます）</h3>
           <ul class="guide-preview" id="guidePreview"></ul>
         </section>
         <section class="manual-section">
           <div class="guide-actions">
             <button class="btn primary" id="guideShowBtn" type="button" data-tooltip="選んだ型のヒントを、周囲8マスに薄く表示します。「無地」を選んで表示すると、ヒントを消せます。">表示</button>
+            <button class="btn" id="guideSaveBtn" type="button" data-tooltip="本文を空にし、ヒント・配置・色だけを _template.json に保存します。来年・別単元で使い回せます。">ヒント保存</button>
+            <button class="btn" id="guideHintResetBtn" type="button" data-tooltip="選んでいる型の元の8項目を、周囲8マスに入れ直します（編集・保存後でも最初の状態へ）。">ヒント初期化</button>
           </div>
         </section>
       </div>
@@ -1777,7 +1769,6 @@
       arrangeBtn: document.getElementById("arrangeBtn"),
       copySheetBtn: document.getElementById("copySheetBtn"),
       exportJsonBtn: document.getElementById("exportJsonBtn"),
-      exportTemplateBtn: document.getElementById("exportTemplateBtn"),
       printBtn: document.getElementById("printBtn"),
       manualBtn: document.getElementById("manualBtn"),
       backBtn: document.getElementById("backBtn"),
@@ -1813,7 +1804,8 @@
       guideOptions: document.getElementById("guideOptions"),
       guidePreview: document.getElementById("guidePreview"),
       guideShowBtn: document.getElementById("guideShowBtn"),
-      guideResetBtn: document.getElementById("guideResetBtn"),
+      guideSaveBtn: document.getElementById("guideSaveBtn"),
+      guideHintResetBtn: document.getElementById("guideHintResetBtn"),
       guideCloseBtn: document.getElementById("guideCloseBtn"),
       printPanel: document.getElementById("printPanel"),
       printCloseBtn: document.getElementById("printCloseBtn"),
@@ -3037,8 +3029,10 @@
     }
 
     function resetData() {
-      const ok = confirm("入力内容と配置を初期化します。よろしいですか。");
-      if (!ok) return;
+      const ok1 = confirm("マンダラを全部消して、まっさらにします。よろしいですか。");
+      if (!ok1) return;
+      const ok2 = confirm("本当に全部消してよいですか。元には戻せません。");
+      if (!ok2) return;
       rememberDataChange();
       data = createBlankData();
       ui = createUiState();
@@ -3242,6 +3236,15 @@
       showToast(cleared ? "ヒントを消しました" : `ヒントを表示しました（${plan.length}マス）`);
     }
 
+    // 選んでいる型の元の8項目を、セルのヒントに入れ直す（編集・保存後でも最初の状態へ戻す）。
+    function resetHintsToOriginal() {
+      if (!guideState) return;
+      const set = (GUIDE_SETS.hint || []).find(item => item.name === guideState.selectedName);
+      if (!set) return;
+      guideState.items = [...set.items];
+      applyGuide();
+    }
+
     function tsvEscape(value) {
       const text = String(value ?? "");
       return /["\t\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -3299,7 +3302,6 @@
     });
     els.copySheetBtn.addEventListener("click", copyForSheet);
     els.exportJsonBtn.addEventListener("click", exportJson);
-    els.exportTemplateBtn.addEventListener("click", exportTemplate);
     els.printBtn.addEventListener("click", openPrintPanel);
     els.manualBtn.addEventListener("click", openManual);
     els.manualCloseBtn.addEventListener("click", closeManual);
@@ -3308,14 +3310,8 @@
     });
     els.guideCloseBtn.addEventListener("click", closeGuide);
     els.guideShowBtn.addEventListener("click", () => applyGuide());
-    els.guideResetBtn.addEventListener("click", () => {
-      if (!guideState) return;
-      const set = (GUIDE_SETS.hint || []).find(item => item.name === guideState.selectedName);
-      if (!set) return;
-      guideState.items = [...set.items];
-      renderGuide();
-      showToast(`「${set.name}」を最初の提案に戻しました`);
-    });
+    els.guideSaveBtn.addEventListener("click", exportTemplate);
+    els.guideHintResetBtn.addEventListener("click", resetHintsToOriginal);
     els.guidePanel.addEventListener("click", event => {
       if (event.target === els.guidePanel) closeGuide();
     });
