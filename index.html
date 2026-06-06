@@ -369,14 +369,6 @@
       opacity: .72;
     }
 
-    .tile-hint {
-      margin-left: 5px;
-      color: #4f5d56;
-      font-size: 10px;
-      font-weight: 800;
-      opacity: .68;
-    }
-
     .tile.theme .tile-id,
     .tile.block .tile-id {
       background: rgba(255,255,255,.9);
@@ -387,8 +379,20 @@
       color: #25312c;
     }
 
-    .tile.block .tile-hint {
+    /* ヒント箱：本文欄の上に常時表示。書いても消えない（児童用に準じる）。 */
+    .tile-hint {
+      align-self: stretch;
+      margin: 0 2px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, .88);
       color: #25312c;
+      padding: 3px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+      white-space: normal;
+      word-break: break-word;
+      pointer-events: none;
     }
 
     .tile.theme {
@@ -508,21 +512,15 @@
       border-color: rgba(37, 49, 44, .32);
     }
 
-    /* ヒントボタン（用途・発想・観点）は淡い黄色で他のボタンと区別する */
-    .mini-btn.guide-btn,
-    .tile.theme .mini-btn.guide-btn,
-    .tile.block .mini-btn.guide-btn {
+    /* ヒントボタンは淡い黄色で他のボタンと区別する（右上ツールバーの「ヒント」） */
+    .btn.guide-btn {
       background: var(--warn);
       border-color: #e0c976;
       color: #6b5a1f;
     }
 
-    .mini-btn.guide-btn:hover,
-    .mini-btn.guide-btn:focus-visible,
-    .tile.theme .mini-btn.guide-btn:hover,
-    .tile.theme .mini-btn.guide-btn:focus-visible,
-    .tile.block .mini-btn.guide-btn:hover,
-    .tile.block .mini-btn.guide-btn:focus-visible {
+    .btn.guide-btn:hover,
+    .btn.guide-btn:focus-visible {
       background: #ffeeb0;
       border-color: #cdb45a;
     }
@@ -834,6 +832,13 @@
       gap: 8px;
     }
 
+    .guide-preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
     .guide-preview {
       margin: 0;
       padding: 0;
@@ -997,67 +1002,6 @@
       font-weight: 900;
     }
 
-    .onboard-banner {
-      margin-bottom: 12px;
-      padding: 12px 14px;
-      border: 1px solid #d8b98f;
-      border-radius: 10px;
-      background: var(--accent-soft);
-    }
-
-    .onboard-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .onboard-head strong {
-      font-size: 15px;
-      color: var(--accent);
-    }
-
-    .onboard-close {
-      border: 0;
-      background: transparent;
-      color: var(--accent);
-      font-size: 20px;
-      line-height: 1;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-
-    .onboard-close:hover {
-      background: rgba(164, 95, 42, .12);
-    }
-
-    .onboard-lead {
-      margin: 6px 0 10px;
-      color: #6b4a25;
-      font-size: 12px;
-    }
-
-    .onboard-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .onboard-option {
-      border: 1px solid #d8b98f;
-      border-radius: 999px;
-      background: #fff;
-      color: var(--accent);
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .onboard-option:hover {
-      background: var(--accent);
-      color: #fff;
-    }
-
     .breadcrumb {
       margin-bottom: 8px;
       color: var(--muted);
@@ -1138,65 +1082,6 @@
       font-weight: 800;
     }
 
-    .editor-identity {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .editor-identity strong {
-      color: var(--text);
-      font-weight: 800;
-    }
-
-    .editor-field {
-      display: block;
-      margin-bottom: 12px;
-    }
-
-    .editor-field-label {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .editor-field-sub {
-      display: block;
-      margin-top: 1px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .editor-field textarea,
-    .editor-field input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 8px;
-      background: #fff;
-      color: var(--text);
-      resize: vertical;
-    }
-
-    .editor-field textarea:focus,
-    .editor-field input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-soft);
-    }
-
-    .editor-tip {
-      margin: -4px 0 0;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
     @media print {
       @page {
         size: A4 landscape;
@@ -1212,7 +1097,6 @@
       .view-head,
       .breadcrumb,
       .step-indicator,
-      .onboard-banner,
       .manual-overlay,
       .app-footer,
       .toast {
@@ -1310,8 +1194,8 @@
       <div class="tool-group" aria-label="保存と管理">
         <span class="tool-label">保存</span>
         <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
-        <button class="btn" id="exportTemplateBtn" type="button" data-tooltip="本文を空にし、ヒント・配置・色だけを残したテンプレートを保存します。来年・別単元で使い回せます。">テンプレート保存</button>
-        <button class="btn" id="resetBtn" type="button" data-tooltip="入力内容と配置を初期状態に戻します。">初期化</button>
+        <button class="btn" id="exportTemplateBtn" type="button" data-tooltip="本文を空にし、ヒント・配置・色だけを残して保存します。来年・別単元で使い回せます。">ヒント保存</button>
+        <button class="btn" id="resetBtn" type="button" data-tooltip="入力内容と配置を、最初の状態に戻します。">初期化（最初の状態にもどす）</button>
       </div>
       <div class="tool-group" aria-label="ヘルプ">
         <span class="tool-label">ヘルプ</span>
@@ -1323,14 +1207,6 @@
   <main class="shell">
     <section class="workspace">
       <div class="canvas-panel">
-        <div class="onboard-banner" id="onboardBanner" hidden>
-          <div class="onboard-head">
-            <strong>何のためのマンダラ？</strong>
-            <button class="onboard-close" id="onboardCloseBtn" type="button" aria-label="閉じる">×</button>
-          </div>
-          <p class="onboard-lead">選ぶと、まわり8マスに考える入口のヒントが入ります。あとで中央の「用途」からいつでも変えられます。</p>
-          <div class="onboard-options" id="onboardOptions"></div>
-        </div>
         <nav class="breadcrumb" id="breadcrumb" aria-label="現在地">大マンダラ</nav>
         <div class="view-head">
           <div class="view-title">
@@ -1338,6 +1214,7 @@
             <p id="viewLead">中央テーマと周囲8つの小マンダラを配置します。</p>
           </div>
           <div class="button-row">
+            <button class="btn guide-btn" id="guideHintBtn" type="button" data-tooltip="周囲8セルに、考える入口のヒント候補を出します。用途・振り返り・斜め上の発想・無地から選べます。">ヒント</button>
             <button class="btn accent" id="arrangeBtn" type="button" data-tooltip="小マンダラやセルの配置をドラッグまたはクリック2回で入れ替えます。">配置換え</button>
             <button class="btn" id="backBtn" type="button" hidden data-tooltip="開いている小マンダラから大マンダラへ戻ります。">大マンダラへ戻る</button>
           </div>
@@ -1366,19 +1243,6 @@
     </section>
 
     <aside class="side">
-      <section class="side-panel editor-panel" id="editorPanel">
-        <h2>選択中のマス</h2>
-        <p class="editor-identity" id="editorIdentity"></p>
-        <label class="editor-field">
-          <span class="editor-field-label">本文</span>
-          <textarea id="editorBody" rows="3" placeholder="このマスに書く内容"></textarea>
-        </label>
-        <label class="editor-field" id="editorHintField">
-          <span class="editor-field-label">ヒント<span class="editor-field-sub">元番地の横に薄く表示。本文には入りません。</span></span>
-          <input id="editorHint" type="text" placeholder="例: 中心発問">
-        </label>
-        <p class="editor-tip" id="editorHintEmptyTip" hidden>ヒントを空にすると、このマスのヒント表示は消えます。</p>
-      </section>
       <section class="side-panel">
         <h2>読み込み</h2>
         <p>JSONは配置やヒントまで復元します。テンプレート（_template.json）を選ぶと、本文は空・ヒント入りの新しいシートとして始まります。スプシ貼り付けは、表に見えている9×9の内容を取り込みます。</p>
@@ -1421,48 +1285,47 @@
         <section class="manual-section">
           <h3>このアプリの考え方</h3>
           <p>マンダラ・プランナーは、決まったテンプレートを埋める道具ではありません。大マンダラで考える入口を並べ、小マンダラで1つずつ深め、必要に応じて配置を変えながら、自分の思考を見える形にする道具です。</p>
-          <p>ガイドは答えではなく「ヒント」です。本文には入りません。元番地の横に薄く表示されるので、それを見ながら自分の言葉でセルに書きます。ヒントは選んで入れるだけでなく、右の「選択中のマス」で1つずつ書き換えられます。自分用の型ができたら「テンプレート保存」で残し、毎年や別単元で使い回せます。</p>
+          <p>ヒントは答えではなく「考える入口」です。本文には入りません。マスの上の小さな「ヒント箱」に常に表示され、書いても消えません。だから、それを見ながらマスに直接書き込むことに専念できます。自分用の型ができたら「ヒント保存」で残し、毎年や別単元で使い回せます。</p>
         </section>
         <section class="manual-section">
           <h3>最短の使い方</h3>
           <ol>
-            <li>最初に「何のためのマンダラ？」が出たら、用途を選びます。周囲8セルにヒントが入ります（あとで変えられます）。</li>
             <li>大マンダラ中央に、考えたいテーマを書きます。</li>
-            <li>ヒントを見ながら、周囲8セルに自分の言葉で入口を書きます。</li>
+            <li>必要なら、右上の「ヒント」で型を1つ選び「表示」を押すと、周囲8マスのヒント箱に考える入口が出ます。</li>
+            <li>ヒント箱を見ながら、周囲8セルに自分の言葉で入口を書きます（ヒント箱は書いても残ります）。</li>
             <li>入口セルの「開く」を押し、小マンダラへ移動します。</li>
-            <li>小マンダラ中央の「観点」または「発想」（淡い黄色のボタン）でヒントを出し、周囲8セルに具体案を書きます。</li>
-            <li>マスを選ぶと、右の「選択中のマス」で本文とヒントを1つずつ直せます。</li>
+            <li>小マンダラの周囲8セルに、その入口を具体化する案を自分の言葉で書きます。</li>
             <li>「9×9全体」で全体を俯瞰し、つながりや抜けを確認します。</li>
-            <li>必要なら「配置換え」で並びを変え、「スプシにコピー」「ファイル保存」「テンプレート保存」で残します。</li>
+            <li>必要なら「配置換え」で並びを変え、「スプシにコピー」「ファイル保存」「ヒント保存」で残します。</li>
           </ol>
         </section>
         <section class="manual-section">
-          <h3>4つのガイド</h3>
-          <p>ガイドは、中央セルの淡い黄色のボタン（大マンダラの「用途」「発想」、小マンダラの「観点」「発想」）から出します。4種類あり、おすすめ順は出しません。組み合わせは教師自身が判断します。</p>
+          <h3>ヒント（右上のボタン）</h3>
+          <p>ヒントは、画面右上の淡い黄色の「ヒント」ボタンから出します。大マンダラを表示しているときに使えます。7つの型があり、おすすめ順は出しません。どれを使うかは教師自身が選びます。小マンダラは、大マンダラで出した入口を見ながら、自分の言葉で深めていきます。</p>
           <ul>
-            <li><span class="manual-term">大マンダラの用途</span>: 何について考えるかを決める入口です。授業づくり、学級経営、校務整理、実践の省察、インプット学習、レポート作成などがあります。</li>
-            <li><span class="manual-term">大マンダラの発想</span>: 全体をどう分けるかを考えるヒントです。目的、対象、時間、場面、課題、関係者などで分けられます。</li>
-            <li><span class="manual-term">小マンダラの観点</span>: 1つの入口を具体化するヒントです。授業の観点、学級経営の観点、実行計画、省察、文章化などがあります。</li>
-            <li><span class="manual-term">小マンダラの発想</span>: 1つの入口をさらに広げるヒントです。視点をずらす、制約を変える、価値から見る、実務に落とす、文章にするなどがあります。</li>
+            <li><span class="manual-term">授業づくり／学級経営／校務／企画</span>: 仕事の場面ごとに、考える入口の要素を並べます。</li>
+            <li><span class="manual-term">リフレクション</span>: 実践を振り返るための入口です。場面、子どもの姿、できたこと、難しかったこと、次に試すことなどで整理します。</li>
+            <li><span class="manual-term">斜め上45°</span>: 発想を飛ばすための入口です。あべこべにする、いっそ無くす、だれかになりきる、など、いつもと違う角度で考えます。</li>
+            <li><span class="manual-term">無地</span>: ヒントを空のまま出し、その場で自分の言葉を8つ書いて反映できます。最初から自由に作りたいときに使います。</li>
           </ul>
         </section>
         <section class="manual-section">
-          <h3>ヒントの反映方法</h3>
-          <p>ガイドは画面の右に出るので、シートを見ながら候補を選べます。番号は中央の上から時計回り（①→⑧）に対応し、候補の1番目が①に入ります。</p>
+          <h3>ヒントの表示・消し方</h3>
+          <p>「ヒント」パネルは画面の右に出るので、シートを見ながら型を選べます。番号は中央の上から時計回り（①→⑧）に対応し、候補の1番目が①に入ります。</p>
           <ul>
-            <li><span class="manual-term">ヒントがない所だけ表示</span>: すでにヒントがあるセルはそのままにし、空いているセルだけにヒントを出します。すべて埋まっているときは「すべて更新」を案内します。</li>
-            <li><span class="manual-term">ヒントをすべて更新</span>: 8つのヒントを、いま選んでいる候補でまとめて置き換えます。</li>
-            <li><span class="manual-term">候補の編集</span>: 反映前に8つの候補を書き換えられます。編集はその場だけで、定型候補そのものは壊れません。</li>
-            <li><span class="manual-term">1マスずつ編集</span>: マスを選ぶと、右の「選択中のマス」で本文とヒントを直接書き換えられます。自分の単元に合わせてヒントを育てられます。</li>
+            <li><span class="manual-term">表示</span>: 選んだ型のヒントを、周囲8マスのヒント箱に表示します。書いても残ります。</li>
+            <li><span class="manual-term">消す</span>: 「無地」を選んで「表示」を押すと、ヒントを消せます。</li>
+            <li><span class="manual-term">候補の編集</span>: 表示する前に8つの候補を書き換えられます。編集はその場だけで、定型候補そのものは壊れません。</li>
+            <li><span class="manual-term">初期化</span>: 編集した候補を、最初の提案に戻します。</li>
           </ul>
         </section>
         <section class="manual-section">
           <h3>使い分けの例</h3>
           <ul>
-            <li><span class="manual-term">授業づくり</span>: 大マンダラの「用途」で授業づくりの入口を出し、小マンダラでは「授業の観点」や「発想」を使って各入口を深めます。</li>
-            <li><span class="manual-term">実践の省察</span>: 大マンダラの「用途」で実践の省察を選び、小マンダラでは「省察」や「価値から見る」を使って、事実、意味づけ、次の一手へ進めます。</li>
-            <li><span class="manual-term">インプット学習</span>: 本や動画、研修で得た内容を、大マンダラで要点や疑問に分け、小マンダラで「インプット整理」や「実務に落とす」を使って自分の実践につなげます。</li>
-            <li><span class="manual-term">レポート作成</span>: 大マンダラでテーマ、背景、目的、見えたことなどを整理し、小マンダラで「文章化」や「文章にする」を使って書く材料をそろえます。</li>
+            <li><span class="manual-term">授業づくり</span>: 右上の「ヒント」で「授業づくり」を選んで入口を出し、小マンダラで各入口を活動・対話・板書・支援などへ具体化します。</li>
+            <li><span class="manual-term">リフレクション</span>: 右上の「ヒント」で「リフレクション」を選び、小マンダラで事実、意味づけ、次の一手へと書き進めます。</li>
+            <li><span class="manual-term">斜め上45°</span>: 行きづまったら「斜め上45°」を選び、あえて真逆や極端から考えて、いつもと違う一手を見つけます。</li>
+            <li><span class="manual-term">自由に作る</span>: 型に縛られたくないときは「無地」を選び、その場で8つの入口を自分の言葉で書いて反映します。</li>
           </ul>
         </section>
         <section class="manual-section">
@@ -1483,7 +1346,7 @@
           <ul>
             <li><span class="manual-term">自動保存</span>: 同じ端末・同じブラウザでは、前回の続きから始められます。これは一時的な保険です。</li>
             <li><span class="manual-term">ファイル保存</span>: 正式に残すときに使います。JSONファイルとして保存し、読み込みから復元できます。</li>
-            <li><span class="manual-term">テンプレート保存</span>: 本文を空にして、ヒント・配置・色だけを残したテンプレート（_template.json）を保存します。来年や別単元で同じ枠組みを使い回せます。</li>
+            <li><span class="manual-term">ヒント保存</span>: 本文を空にして、ヒント・配置・色だけを残して保存します（_template.json）。来年や別単元で同じ枠組みを使い回せます。</li>
             <li><span class="manual-term">読み込み</span>: JSONは配置やヒントまで復元します。テンプレート（_template.json）を選ぶと、本文は空・ヒント入りの新しいシートとして始まります。スプシ貼り付けは、表に見えている9×9の文字を取り込みます。</li>
             <li><span class="manual-term">スプシにコピー</span>: 印刷・共有の主ルートです。GoogleスプレッドシートのA1セルへ貼り付けて整えます。</li>
             <li><span class="manual-term">印刷</span>: 大マンダラだけ、小マンダラだけ、9×9全体を選んで直接印刷できます。ブラウザ印刷は補助機能です。</li>
@@ -1496,8 +1359,8 @@
         <section class="manual-section">
           <h3>迷ったとき</h3>
           <ul>
-            <li>最初から自由に作りたいときは、大マンダラの「用途」で「無地」を選びます。</li>
-            <li>ヒントが多すぎると感じたら、「ヒントをすべて更新」ではなく「ヒントがない所だけ表示」を使います。</li>
+            <li>最初から自由に作りたいときは、右上の「ヒント」で「無地」を選んで「表示」を押します。</li>
+            <li>ヒントが気になるときは、「無地」を表示すればヒントを消せます。</li>
             <li>本文に何を書くか迷ったら、ヒントをそのまま写さず、「自分の言葉ならどう言うか」を考えます。</li>
             <li>全体が散らかったら、9×9全体で眺めてから、3×3編集に戻って配置換えします。</li>
           </ul>
@@ -1519,14 +1382,15 @@
           <div class="guide-options" id="guideOptions"></div>
         </section>
         <section class="manual-section">
-          <h3>入る候補（編集できます）</h3>
+          <div class="guide-preview-head">
+            <h3>入る候補（編集できます）</h3>
+            <button class="btn" id="guideResetBtn" type="button" data-tooltip="編集した候補を、最初の提案に戻します。">初期化</button>
+          </div>
           <ul class="guide-preview" id="guidePreview"></ul>
         </section>
         <section class="manual-section">
-          <h3>反映方法</h3>
           <div class="guide-actions">
-            <button class="btn primary" id="guideFillEmptyBtn" type="button" data-tooltip="まだヒントがないセルだけに、候補をヒントとして表示します。">ヒントがない所だけ表示</button>
-            <button class="btn" id="guideReplaceAllBtn" type="button" data-tooltip="8つのヒントを、いまの候補でまとめて更新します。">ヒントをすべて更新</button>
+            <button class="btn primary" id="guideShowBtn" type="button" data-tooltip="選んだ型のヒントを、周囲8マスに薄く表示します。「無地」を選んで表示すると、ヒントを消せます。">表示</button>
           </div>
         </section>
       </div>
@@ -1624,38 +1488,14 @@
       { color: "#5f3dc4", soft: "#f0ecff", border: "#cabdff", ring: "rgba(95, 61, 196, .18)" }
     ];
     const GUIDE_SETS = {
-      bigUse: [
-        { name: "授業づくり", items: ["単元目標", "児童の実態", "導入", "中心発問", "活動", "板書", "評価", "支援"] },
-        { name: "学級経営", items: ["生活", "学習", "係活動", "当番", "人間関係", "保護者連携", "行事", "個別支援"] },
-        { name: "校務整理", items: ["議題", "資料", "役割", "期限", "確認事項", "未決定", "共有先", "次回まで"] },
-        { name: "研修企画", items: ["ねらい", "対象", "時間配分", "体験活動", "資料", "事例", "留意点", "次の一手"] },
-        { name: "実践の省察", items: ["実践場面", "児童の姿", "うまくいったこと", "うまくいかなかったこと", "自分の関わり", "見えてきた問い", "次に試すこと", "学びたいこと"] },
-        { name: "インプット学習", items: ["要点", "気づき", "疑問", "実践との接点", "試したいこと", "子どもの学びへの影響", "共有したいこと", "次に学ぶこと"] },
-        { name: "レポート作成", items: ["テーマ", "背景", "目的", "実践・事例", "見えたこと", "考察", "課題", "まとめ"] },
+      hint: [
+        { name: "授業づくり", items: ["単元目標", "児童の実態", "導入", "中心発問", "主な活動", "板書・掲示", "評価", "個別支援"] },
+        { name: "学級経営", items: ["学習", "生活", "人間関係", "係・当番", "行事", "保護者連携", "個別支援", "学級の願い"] },
+        { name: "校務", items: ["議題", "現状", "資料", "役割分担", "期限", "決定事項", "未決定", "次回まで"] },
+        { name: "企画", items: ["ねらい", "対象", "時間配分", "体験・演習", "資料・事例", "留意点", "役割", "次の一手"] },
+        { name: "リフレクション", items: ["場面", "子どもの姿", "できたこと", "難しかったこと", "自分の関わり", "気づき・問い", "次に試すこと", "学びたいこと"] },
+        { name: "斜め上45°", items: ["あべこべにする", "思いきり振り切る", "いっそ無くす", "よそのワザを盗む", "だれかになりきる", "ルールを取っぱらう", "他のものと組み合わせる", "めざすゴールを書いてみる"] },
         { name: "無地", items: ["", "", "", "", "", "", "", ""] }
-      ],
-      bigIdea: [
-        { name: "全体を分ける", items: ["目的で分ける", "対象で分ける", "時間で分ける", "場面で分ける", "課題で分ける", "関係者で分ける", "成果物で分ける", "次の行動で分ける"] },
-        { name: "関係で分ける", items: ["原因", "結果", "条件", "比較", "優先順位", "役割", "リスク", "支援"] },
-        { name: "流れで分ける", items: ["前提", "準備", "導入", "展開", "確認", "共有", "振り返り", "次の一手"] }
-      ],
-      smallPerspective: [
-        { name: "具体化", items: ["目的", "現状", "手順", "準備物", "反応", "つまずき", "支援", "評価"] },
-        { name: "授業の観点", items: ["問い", "活動", "対話", "板書", "ICT", "個別支援", "見取り", "振り返り"] },
-        { name: "学級経営の観点", items: ["安心感", "生活", "学習", "関係づくり", "自治", "役割", "保護者連携", "個別支援"] },
-        { name: "実行計画", items: ["最初にすること", "誰がするか", "いつまで", "必要なもの", "確認先", "共有方法", "困った時", "次の一手"] },
-        { name: "研修設計", items: ["ねらい", "対象", "導入", "体験", "共有", "資料", "留意点", "次の行動"] },
-        { name: "省察", items: ["事実", "解釈", "感情", "根拠", "児童の姿", "自分の関わり", "別の見方", "次に試すこと"] },
-        { name: "インプット整理", items: ["重要な主張", "根拠", "具体例", "キーワード", "印象に残った言葉", "既知との違い", "使える場面", "一言で言うと"] },
-        { name: "文章化", items: ["何を伝えるか", "読み手は誰か", "根拠は何か", "具体例は何か", "引用・資料", "論理の流れ", "書き足すこと", "削ること"] }
-      ],
-      smallIdea: [
-        { name: "視点をずらす", items: ["児童から見る", "初心者から見る", "保護者から見る", "同僚から見る", "未来から見る", "過去から見る", "反対側から見る", "俯瞰して見る"] },
-        { name: "制約を変える", items: ["時間を半分にする", "人手を減らす", "準備を減らす", "道具を変える", "場所を変える", "順番を変える", "対象を絞る", "小さく試す"] },
-        { name: "発想チェック", items: ["転用する", "応用する", "変更する", "拡大する", "縮小する", "代用する", "並べ替える", "組み合わせる"] },
-        { name: "価値から見る", items: ["子どもの学び", "安心感", "自律", "対話", "公平さ", "継続しやすさ", "成長の見取り", "意味のある負荷"] },
-        { name: "実務に落とす", items: ["最初の一手", "やめること", "残すこと", "任せること", "共有すること", "記録すること", "確認すること", "次回直すこと"] },
-        { name: "文章にする", items: ["一文で言う", "事実を書く", "解釈を書く", "根拠を書く", "具体例を書く", "読み手の疑問", "反論への備え", "次の課題"] }
       ]
     };
 
@@ -1674,17 +1514,9 @@
       printBtn: document.getElementById("printBtn"),
       manualBtn: document.getElementById("manualBtn"),
       backBtn: document.getElementById("backBtn"),
+      guideHintBtn: document.getElementById("guideHintBtn"),
       resetBtn: document.getElementById("resetBtn"),
       grid: document.getElementById("grid"),
-      onboardBanner: document.getElementById("onboardBanner"),
-      onboardOptions: document.getElementById("onboardOptions"),
-      onboardCloseBtn: document.getElementById("onboardCloseBtn"),
-      editorPanel: document.getElementById("editorPanel"),
-      editorIdentity: document.getElementById("editorIdentity"),
-      editorBody: document.getElementById("editorBody"),
-      editorHint: document.getElementById("editorHint"),
-      editorHintField: document.getElementById("editorHintField"),
-      editorHintEmptyTip: document.getElementById("editorHintEmptyTip"),
       breadcrumb: document.getElementById("breadcrumb"),
       stepIndicator: document.getElementById("stepIndicator"),
       step1: document.getElementById("step1"),
@@ -1713,8 +1545,8 @@
       guideNote: document.getElementById("guideNote"),
       guideOptions: document.getElementById("guideOptions"),
       guidePreview: document.getElementById("guidePreview"),
-      guideFillEmptyBtn: document.getElementById("guideFillEmptyBtn"),
-      guideReplaceAllBtn: document.getElementById("guideReplaceAllBtn"),
+      guideShowBtn: document.getElementById("guideShowBtn"),
+      guideResetBtn: document.getElementById("guideResetBtn"),
       guideCloseBtn: document.getElementById("guideCloseBtn"),
       printPanel: document.getElementById("printPanel"),
       printCloseBtn: document.getElementById("printCloseBtn"),
@@ -1917,6 +1749,8 @@
       els.backBtn.hidden = !(ui.mode === "structure" && ui.activeView === "small");
       els.arrangeBtn.hidden = ui.mode !== "structure";
       els.arrangeBtn.disabled = ui.mode === "whole" || ui.mode === "print";
+      els.guideHintBtn.hidden = !(ui.mode === "structure" && ui.activeView === "big");
+      els.guideHintBtn.disabled = ui.arrangeMode;
 
       if (ui.mode === "print" && printTarget === "big") renderBigView();
       else if (ui.mode === "print" && printTarget === "small") renderSmallView();
@@ -1925,7 +1759,6 @@
       else renderBigView();
 
       renderEditor();
-      renderCellEditor();
       refreshSelectedHighlight();
       renderArrangeStatus();
       renderProgress();
@@ -2100,26 +1933,9 @@
         renderSteps();
         renderBreadcrumb();
       });
+      appendHintBox(tile, item);
       tile.appendChild(input);
       appendIdentityBadge(tile, item);
-
-      if (item.kind === "theme" && ui.activeView === "big") {
-        tile.classList.add("has-open");
-        const actions = document.createElement("div");
-        actions.className = "tile-actions";
-        actions.appendChild(createGuideButton("用途", "bigUse", item));
-        actions.appendChild(createGuideButton("発想", "bigIdea", item));
-        tile.appendChild(actions);
-      }
-
-      if (item.kind === "block" && item.isCenterBlock) {
-        tile.classList.add("has-open");
-        const actions = document.createElement("div");
-        actions.className = "tile-actions";
-        actions.appendChild(createGuideButton("観点", "smallPerspective", item));
-        actions.appendChild(createGuideButton("発想", "smallIdea", item));
-        tile.appendChild(actions);
-      }
 
       if (item.kind === "block" && ui.activeView === "big") {
         tile.classList.add("has-open");
@@ -2151,29 +1967,8 @@
       return tile;
     }
 
-    function createGuideButton(label, guideType, item) {
-      const button = document.createElement("button");
-      button.className = "mini-btn guide-btn";
-      button.type = "button";
-      button.textContent = label;
-      setButtonTooltip(button, guideTooltip(label, guideType));
-      button.addEventListener("click", event => {
-        event.stopPropagation();
-        if (ui.arrangeMode) return;
-        openGuide(guideType, item);
-      });
-      return button;
-    }
-
     function setButtonTooltip(button, text) {
       button.dataset.tooltip = text;
-    }
-
-    function guideTooltip(label, guideType) {
-      if (guideType === "bigUse") return "大マンダラ全体の用途候補を、周囲8セルのヒントとして表示します。";
-      if (guideType === "bigIdea") return "大マンダラ全体をどう分けるか、周囲8セルのヒントとして表示します。";
-      if (guideType === "smallPerspective") return "この小マンダラを具体化する観点を、周囲8セルのヒントとして表示します。";
-      return "この小マンダラを広げる発想視点を、周囲8セルのヒントとして表示します。";
     }
 
     function createNineTile(item) {
@@ -2237,13 +2032,16 @@
         count.textContent = `${item.filledCount}/8`;
         badge.appendChild(count);
       }
-      if (item.hint) {
-        const hint = document.createElement("span");
-        hint.className = "tile-hint";
-        hint.textContent = item.hint;
-        badge.appendChild(hint);
-      }
       tile.appendChild(badge);
+    }
+
+    // ヒントは「ヒント箱」として本文欄の上に常時表示する（児童用に準じる）。書いても消えない。
+    function appendHintBox(tile, item) {
+      if (!item.hint || !item.hint.trim()) return;
+      const box = document.createElement("span");
+      box.className = "tile-hint";
+      box.textContent = item.hint;
+      tile.appendChild(box);
     }
 
     function applyPalette(tile, item) {
@@ -2254,11 +2052,16 @@
       tile.style.setProperty("--block-ring", item.palette.ring);
     }
 
-    function placeholderFor(item) {
-      if (item.kind === "theme") return "中央テーマ";
-      if (item.kind === "block") return item.originalLabel || "小マンダラ";
-      if (item.kind === "cell") return item.originalLabel || "セル";
+    function defaultPlaceholder(kind) {
+      if (kind === "theme") return "考えたいテーマを書く";
+      if (kind === "block") return "考えの入口を書く";
+      if (kind === "cell") return "思いついたことを書く";
       return "";
+    }
+
+    function placeholderFor(item) {
+      // ヒントはセル内の「ヒント箱」に常時表示する。プレースホルダーは書き込みを促す文。
+      return defaultPlaceholder(item.kind);
     }
 
     function handleTileClick(item) {
@@ -2271,7 +2074,6 @@
       if (item.kind === "block") ui.selected = { kind: "block", blockId: item.blockId || item.id };
       if (item.kind === "cell") ui.selected = { kind: "cell", blockId: item.blockId, cellId: item.cellId || item.id };
       renderEditor();
-      renderCellEditor();
       refreshSelectedHighlight();
     }
 
@@ -2293,7 +2095,6 @@
     function syncEditorTitle(value) {
       const active = document.activeElement;
       if (active !== els.selectedTitle) els.selectedTitle.value = value;
-      if (els.editorBody && active !== els.editorBody) els.editorBody.value = value;
     }
 
     function refreshVisibleSelectedTitle(value) {
@@ -2322,25 +2123,6 @@
       els.selectedNote.value = target.object.note || "";
     }
 
-    function renderCellEditor() {
-      if (!els.editorPanel) return;
-      const target = getSelectedTarget();
-      if (!target) return;
-      const active = document.activeElement;
-      els.editorIdentity.innerHTML = target.identity
-        .filter(row => row.label === "種別" || row.label === "元番地" || row.label === "現在位置")
-        .map(row => `<span><strong>${htmlEscape(row.label)}</strong> ${htmlEscape(row.value)}</span>`)
-        .join("");
-      if (active !== els.editorBody) els.editorBody.value = target.object.title || "";
-
-      // ヒントは小マンダラ（入口）とセルにだけ表示。中央テーマには出さない。
-      const supportsHint = ui.selected.kind === "block" || ui.selected.kind === "cell";
-      els.editorHintField.style.display = supportsHint ? "" : "none";
-      if (supportsHint && active !== els.editorHint) {
-        els.editorHint.value = target.object.hint || "";
-      }
-    }
-
     function selectedTileSelector() {
       if (ui.selected.kind === "theme") return '.tile[data-item-kind="theme"]';
       if (ui.selected.kind === "block") return `.tile[data-item-kind="block"][data-block-id="${ui.selected.blockId}"]`;
@@ -2353,26 +2135,6 @@
       const selector = selectedTileSelector();
       if (!selector) return;
       document.querySelectorAll(`#grid ${selector}`).forEach(tile => tile.classList.add("selected"));
-    }
-
-    function refreshSelectedHint(value) {
-      const selector = selectedTileSelector();
-      if (!selector) return;
-      document.querySelectorAll(`#grid ${selector}`).forEach(tile => {
-        const badge = tile.querySelector(".tile-id");
-        if (!badge) return;
-        let hintEl = badge.querySelector(".tile-hint");
-        if (value) {
-          if (!hintEl) {
-            hintEl = document.createElement("span");
-            hintEl.className = "tile-hint";
-            badge.appendChild(hintEl);
-          }
-          hintEl.textContent = value;
-        } else if (hintEl) {
-          hintEl.remove();
-        }
-      });
     }
 
     function getSelectedTarget() {
@@ -3101,21 +2863,11 @@
     }
 
     function guideTitleFor(type) {
-      if (type === "bigUse") return "用途から作る";
-      if (type === "bigIdea") return "発想を広げる";
-      if (type === "smallPerspective") return "観点を出す";
-      return "発想を広げる";
+      return "ヒントから選ぶ";
     }
 
     function guideLeadFor(type) {
-      if (type === "bigUse") return "大マンダラの周囲8セルに、入口候補をヒントとして出します。";
-      if (type === "bigIdea") return "中央テーマを分解する切り口を、元番地横のヒントとして出します。";
-      if (type === "smallPerspective") return "この小マンダラの周囲8セルに、観点候補をヒントとして出します。";
-      return "この入口テーマを別方向へ広げる切り口を、元番地横のヒントとして出します。";
-    }
-
-    function guideAppliesAsHint(type) {
-      return true;
+      return "周囲8セルに、考える入口のヒント候補を出します。候補は選んでから書き換えられます。";
     }
 
     function renderGuide() {
@@ -3155,48 +2907,34 @@
       });
     }
 
-    function applyGuide(onlyEmpty) {
+    function applyGuide() {
       if (!guideState || !guideState.items.length) return;
       const items = guideState.items;
-      const field = guideAppliesAsHint(guideState.type) ? "hint" : "title";
 
       // 反映先の8つを「時計回りの番号順（①→⑧）」で集める。候補1番目が①に入る。
-      let targets = [];
-      if (guideState.type === "bigUse" || guideState.type === "bigIdea") {
-        targets = CLOCKWISE_POSITIONS.map(position => data.blocks[data.blockLayout[position]]);
-      } else {
-        const block = data.blocks[guideState.blockId];
-        if (!block) return;
-        targets = CLOCKWISE_POSITIONS.map(position => block.cells[block.cellLayout[position]]);
-      }
+      const targets = CLOCKWISE_POSITIONS.map(position => data.blocks[data.blockLayout[position]]);
 
-      // まだ書き換えず、実際に変わるものだけを先に洗い出す
+      // まだ書き換えず、実際に変わるものだけを先に洗い出す（ヒント＝マスに薄く出す文字）
       const plan = [];
       targets.forEach((target, index) => {
         if (!target) return;
-        if (onlyEmpty && (target[field] || "").trim()) return;   // 空欄だけ：埋まっていれば触らない
         const next = items[index] || "";
-        if ((target[field] || "") === next) return;              // 同じ内容なら変更なし
+        if ((target.hint || "") === next) return;   // 同じ内容なら変更なし
         plan.push({ target, next });
       });
 
-      // 1件も変わらないときは、黙って成功にせず案内する
       if (plan.length === 0) {
-        showToast(onlyEmpty
-          ? "すでにヒントがあります。差し替えるなら「ヒントをすべて更新」を押してください"
-          : "ヒントは変わりませんでした");
+        showToast("ヒントは変わりませんでした");
         return;
       }
 
-      rememberDataChange();                                       // 変更前の状態を記録（戻す用）
-      plan.forEach(({ target, next }) => { target[field] = next; });
-      const changed = plan.length;
+      rememberDataChange();                          // 変更前の状態を記録（戻す用）
+      plan.forEach(({ target, next }) => { target.hint = next; });
+      const cleared = items.every(text => !(text || "").trim());
       saveNow(true);
       closeGuide();
       render();
-      showToast(onlyEmpty
-        ? `空欄に${changed}個のヒントを入れました`
-        : `ヒントを入れ替えました（${changed}個）`);
+      showToast(cleared ? "ヒントを消しました" : `ヒントを表示しました（${plan.length}マス）`);
     }
 
     function tsvEscape(value) {
@@ -3241,61 +2979,6 @@
     }
 
     // ─── 目的オンボーディング（初回バナー） ───────────────
-    const ONBOARD_KEY = "teacher_mandala_onboarded_v1";
-
-    function isSheetEmpty() {
-      if ((data.centerTheme.title || "").trim() || (data.centerTheme.note || "").trim()) return false;
-      return Object.values(data.blocks).every(block => {
-        if ((block.title || "").trim() || (block.note || "").trim() || (block.hint || "").trim()) return false;
-        return Object.values(block.cells).every(cell =>
-          !((cell.title || "").trim() || (cell.note || "").trim() || (cell.hint || "").trim()));
-      });
-    }
-
-    function renderOnboardingOptions() {
-      els.onboardOptions.innerHTML = "";
-      (GUIDE_SETS.bigUse || []).forEach(set => {
-        const btn = document.createElement("button");
-        btn.className = "onboard-option";
-        btn.type = "button";
-        btn.textContent = set.name;
-        btn.addEventListener("click", () => {
-          applyOnboardingPreset(set.name);
-          dismissOnboarding();
-          showToast(set.name === "無地" ? "無地で始めます" : `${set.name}のヒントを入れました`);
-        });
-        els.onboardOptions.appendChild(btn);
-      });
-    }
-
-    function applyOnboardingPreset(setName) {
-      const set = (GUIDE_SETS.bigUse || []).find(item => item.name === setName);
-      if (!set) return;
-      rememberDataChange();
-      CLOCKWISE_POSITIONS.forEach((position, index) => {
-        const block = data.blocks[data.blockLayout[position]];
-        if (block) block.hint = set.items[index] || "";
-      });
-      saveNow(true);
-      render();
-    }
-
-    function maybeShowOnboarding() {
-      if (!els.onboardBanner) return;
-      const done = localStorage.getItem(ONBOARD_KEY);
-      if (!done && isSheetEmpty()) {
-        renderOnboardingOptions();
-        els.onboardBanner.hidden = false;
-      } else {
-        els.onboardBanner.hidden = true;
-      }
-    }
-
-    function dismissOnboarding() {
-      localStorage.setItem(ONBOARD_KEY, "1");
-      els.onboardBanner.hidden = true;
-    }
-
     CHANNELS.forEach(channel => {
       const btn = els["chBtn" + channel];
       if (btn) btn.addEventListener("click", () => switchChannel(channel));
@@ -3305,6 +2988,10 @@
     els.undoBtn.addEventListener("click", undoChange);
     els.redoBtn.addEventListener("click", redoChange);
     els.arrangeBtn.addEventListener("click", toggleArrange);
+    els.guideHintBtn.addEventListener("click", () => {
+      if (ui.arrangeMode) return;
+      openGuide("hint", { id: "centerTheme" });
+    });
     els.copySheetBtn.addEventListener("click", copyForSheet);
     els.exportJsonBtn.addEventListener("click", exportJson);
     els.exportTemplateBtn.addEventListener("click", exportTemplate);
@@ -3315,8 +3002,15 @@
       if (event.target === els.manualPanel) closeManual();
     });
     els.guideCloseBtn.addEventListener("click", closeGuide);
-    els.guideFillEmptyBtn.addEventListener("click", () => applyGuide(true));
-    els.guideReplaceAllBtn.addEventListener("click", () => applyGuide(false));
+    els.guideShowBtn.addEventListener("click", () => applyGuide());
+    els.guideResetBtn.addEventListener("click", () => {
+      if (!guideState) return;
+      const set = (GUIDE_SETS.hint || []).find(item => item.name === guideState.selectedName);
+      if (!set) return;
+      guideState.items = [...set.items];
+      renderGuide();
+      showToast(`「${set.name}」を最初の提案に戻しました`);
+    });
     els.guidePanel.addEventListener("click", event => {
       if (event.target === els.guidePanel) closeGuide();
     });
@@ -3349,34 +3043,12 @@
       scheduleSave();
       renderProgress();
     });
-    els.editorBody.addEventListener("input", event => {
-      const target = getSelectedTarget();
-      if (!target) return;
-      rememberDataChange();
-      target.object.title = event.target.value;
-      scheduleSave();
-      renderProgress();
-      renderSteps();
-      refreshVisibleSelectedTitle(event.target.value);
-      renderBreadcrumb();
-      syncEditorTitle(event.target.value);
-    });
-    els.editorHint.addEventListener("input", event => {
-      if (!(ui.selected.kind === "block" || ui.selected.kind === "cell")) return;
-      const target = getSelectedTarget();
-      if (!target) return;
-      rememberDataChange();
-      target.object.hint = event.target.value;
-      scheduleSave();
-      refreshSelectedHint(event.target.value);
-    });
     els.importJsonInput.addEventListener("change", event => {
       const file = event.target.files[0];
       if (file) importJson(file);
       event.target.value = "";
     });
     els.importSheetPasteBtn.addEventListener("click", importSheetPaste);
-    els.onboardCloseBtn.addEventListener("click", dismissOnboarding);
     window.addEventListener("beforeprint", preparePrintView);
     window.addEventListener("afterprint", finishPrintView);
     window.addEventListener("keydown", event => {
@@ -3399,8 +3071,7 @@
 
     render();
     renderChannelBar();
-    maybeShowOnboarding();
-    if (els.onboardBanner.hidden) showToast(`前回の続きから始めます（チャンネル${currentChannel}）`);
+    showToast(`前回の続きから始めます（チャンネル${currentChannel}）`);
   </script>
 </body>
 </html>
