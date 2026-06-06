@@ -811,6 +811,158 @@
       font-weight: 800;
     }
 
+    /* 詳細マニュアル用コンポーネント（manual-body 配下にスコープ） */
+    .manual-body h4 {
+      margin: 6px 0 0;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .manual-body .lead-note {
+      color: var(--text);
+      font-weight: 700;
+    }
+    .manual-body .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .manual-body .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      display: grid;
+      gap: 6px;
+    }
+    .manual-body .card h4 {
+      margin: 0;
+      font-size: 15px;
+      color: var(--primary);
+    }
+    .manual-body .value-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .manual-body .value-list li {
+      position: relative;
+      padding-left: 18px;
+    }
+    .manual-body .value-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .62em;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .manual-body .note,
+    .manual-body .warn,
+    .manual-body .teacher,
+    .manual-body .tip {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid;
+      display: grid;
+      gap: 4px;
+    }
+    .manual-body .note { background: var(--primary-soft); border-color: #bcdccd; }
+    .manual-body .warn { background: #fff0ee; border-color: #e0b3ad; }
+    .manual-body .teacher { background: #eef5fb; border-color: #c4d8e9; }
+    .manual-body .tip { background: var(--warn); border-color: #ecd69a; }
+    .manual-body .label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .manual-body .warn .label { color: #a6423a; }
+    .manual-body .teacher .label { color: #2f6f9f; }
+    .manual-body .tip .label { color: #bc6c25; }
+    .manual-body table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .manual-body th,
+    .manual-body td {
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      vertical-align: top;
+      text-align: left;
+      color: var(--muted);
+    }
+    .manual-body th {
+      background: #edf3ef;
+      color: var(--text);
+    }
+    .manual-body .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .manual-body .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .manual-body .step b {
+      display: block;
+      color: var(--primary);
+      margin-bottom: 3px;
+    }
+    .manual-body .mandala-map {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-width: 300px;
+      margin: 6px auto;
+    }
+    .manual-body .mandala-map div {
+      min-height: 52px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      padding: 6px;
+      text-align: center;
+      background: #fff;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .manual-body .mandala-map .center { border-color: var(--primary); }
+    .manual-body .mandala-map .e1 { border-color: #2f80ed; }
+    .manual-body .mandala-map .e2 { border-color: #27ae60; }
+    .manual-body .mandala-map .e3 { border-color: #e2912b; }
+    .manual-body .mandala-map .e4 { border-color: #9b51e0; }
+    .manual-body .mandala-map .e5 { border-color: #1f9e96; }
+    .manual-body .mandala-map .e6 { border-color: #c0392b; }
+    .manual-body .mandala-map .e7 { border-color: #6d4ec0; }
+    .manual-body .mandala-map .e8 { border-color: #8a6d3b; }
+    .manual-body .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+    .manual-body .checklist li {
+      position: relative;
+      padding-left: 26px;
+    }
+    .manual-body .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .32em;
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--primary);
+      border-radius: 4px;
+      background: #fff;
+    }
+
     .guide-options,
     .guide-actions {
       display: flex;
@@ -1278,7 +1430,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <div class="manual-overlay" id="manualPanel" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+  <div class="manual-overlay" id="manualPanel" role="dialog" aria-modal="true" aria-labelledby="manualTitle" hidden>
     <div class="manual-dialog">
       <div class="manual-head">
         <h2 id="manualTitle">マニュアル</h2>
@@ -1286,94 +1438,187 @@
       </div>
       <div class="manual-body">
         <section class="manual-section">
-          <h3>このアプリの考え方</h3>
-          <p>マンダラ・プランナーは、決まったテンプレートを埋める道具ではありません。大マンダラで考える入口を並べ、小マンダラで1つずつ深め、必要に応じて配置を変えながら、自分の思考を見える形にする道具です。</p>
-          <p>ヒントは答えではなく「考える入口」です。本文には入りません。マスの上の小さな「ヒント箱」に常に表示され、書いても消えません。だから、それを見ながらマスに直接書き込むことに専念できます。自分用の型ができたら「ヒント保存」で残し、毎年や別単元で使い回せます。</p>
+          <h3>1. このアプリのよさを3つの面から見る</h3>
+          <p>マンダラ・プランナーは、中央のテーマから考えを8方向に広げ、それぞれを小さなマンダラで深めていく、教師自身のためのツールです。決まったテンプレートを埋める道具ではなく、自分の思考を見える形にする道具です。</p>
+          <div class="grid">
+            <div class="card">
+              <h4>考えを見える形にする</h4>
+              <ul class="value-list">
+                <li>テーマから考えを8方向に分けて俯瞰できる。</li>
+                <li>大マンダラ → 小マンダラで自然に詳しくできる。</li>
+                <li>マスは真っ白。だから「埋めたい」気持ちが働く。</li>
+                <li>止まったら「ヒント」が考える入口を出す。</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>準備と校務がはかどる</h4>
+              <ul class="value-list">
+                <li>7つの型から、目的に合うヒントを選べる。</li>
+                <li>配置換えで、考えの順序や構造を組み替えられる。</li>
+                <li>「斜め上45°」で行きづまりを別角度から崩せる。</li>
+                <li>会議・研修・レポートの下ごしらえにも。</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>残す・使い回す</h4>
+              <ul class="value-list">
+                <li>チャンネルA・B・Cで本命と試し書きを分ける。</li>
+                <li>「ファイル保存」でJSONとして残す。</li>
+                <li>「ヒント保存」で型を来年用に残す。</li>
+                <li>「スプシにコピー」「箇条書きメモ化」「印刷」で共有。</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mandala-map" aria-label="マンダラの構造">
+            <div class="e1">入口1</div><div class="e2">入口2</div><div class="e3">入口3</div>
+            <div class="e8">入口8</div><div class="center">中央テーマ</div><div class="e4">入口4</div>
+            <div class="e7">入口7</div><div class="e6">入口6</div><div class="e5">入口5</div>
+          </div>
+          <div class="note">
+            <span class="label">大切にしたいこと</span>
+            <p>目指すのは「全部のマスが埋まること」ではありません。考えが少し進んだ、次に試すことが見えた、構造がつかめた——その状態を目標にします。</p>
+          </div>
         </section>
         <section class="manual-section">
-          <h3>最短の使い方</h3>
-          <ol>
-            <li>大マンダラ中央に、考えたいテーマを書きます。</li>
-            <li>必要なら、右上の「ヒント」で型を1つ選び「表示」を押すと、周囲8マスのヒント箱に考える入口が出ます。</li>
-            <li>ヒント箱を見ながら、周囲8セルに自分の言葉で入口を書きます（ヒント箱は書いても残ります）。</li>
-            <li>入口セルの「開く」を押し、小マンダラへ移動します。</li>
-            <li>小マンダラの周囲8セルに、その入口を具体化する案を自分の言葉で書きます。</li>
-            <li>「9×9全体」で全体を俯瞰し、つながりや抜けを確認します。</li>
-            <li>必要なら「配置換え」で並びを変え、「スプシにコピー」「ファイル保存」「ヒント保存」で残します。</li>
-          </ol>
+          <h3>2. 最短で使う流れ</h3>
+          <div class="flow">
+            <div class="step"><b>1. 開く</b>GASのURL、または公開ページ・ローカルのHTMLを開く。</div>
+            <div class="step"><b>2. テーマ</b>大マンダラ中央に、考えたいテーマを書く。</div>
+            <div class="step"><b>3. ヒント</b>必要なら右上「ヒント」で型を選び「表示」。</div>
+            <div class="step"><b>4. 書く</b>まわり8マスに入口を書き、「開く」で小マンダラを深める。</div>
+            <div class="step"><b>5. 残す</b>「スプシにコピー」「箇条書きメモ化」「ファイル保存」「印刷」。</div>
+          </div>
+          <div class="teacher">
+            <span class="label">最初は作り込みすぎない</span>
+            <p>ヒントを全部出してから書こうとすると、読むだけで止まりがちです。まずテーマと数マスだけ書いて、行きづまったら「ヒント」を出すくらいの軽さが、自分の言葉を引き出します。</p>
+          </div>
         </section>
         <section class="manual-section">
-          <h3>ヒント（右上のボタン）</h3>
-          <p>ヒントは、画面右上の淡い黄色の「ヒント」ボタンから出します。大マンダラを表示しているときに使えます。7つの型があり、おすすめ順は出しません。どれを使うかは教師自身が選びます。小マンダラは、大マンダラで出した入口を見ながら、自分の言葉で深めていきます。</p>
+          <h3>3. 画面の見方</h3>
+          <table>
+            <tr><th>名前</th><th>何ができるか</th></tr>
+            <tr><td>大マンダラ</td><td>中央テーマと、まわり8つの入口を置く。</td></tr>
+            <tr><td>小マンダラ</td><td>1つの入口を8マスで具体化。入口の「開く」で移動。</td></tr>
+            <tr><td>3×3編集 / 9×9全体</td><td>3×3でじっくり編集、9×9で全体を俯瞰。</td></tr>
+            <tr><td>元番地（①, ①-1）</td><td>マスの最初の場所を示す目印。配置換えしても変わらない。</td></tr>
+            <tr><td>戻す / 進む</td><td>直前の変更を1つだけ取り消す・やり直す。</td></tr>
+            <tr><td>チャンネル A・B・C</td><td>3つのマンダラを切り替え。それぞれ自動保存。</td></tr>
+          </table>
+          <h4>白いマスと色の枠線</h4>
+          <p>中央も含めてすべてのマスは白背景です。各マスの枠線にはそのマスの色がついていて、配置換えのときに「どのマスを動かしているか」を色で見分けられます。小マンダラのマスは親の入口と同じ色の枠線になります。</p>
+          <div class="note">
+            <span class="label">番地の右のヒント</span>
+            <p>「ヒント」で型を表示すると、各マスの番地（①など）の右に薄くヒントが出ます。ヒントは本文には入りません。見ながら、自分の言葉でマスに書きます。</p>
+          </div>
+        </section>
+        <section class="manual-section">
+          <h3>4. ヒントの使い方</h3>
+          <p>右上の淡い黄色の「ヒント」ボタン（大マンダラ表示中に使えます）を押すと、7つの型から選べます。おすすめ順は出しません。どれを使うかは自分で選びます。</p>
+          <table>
+            <tr><th>型</th><th>何に効くか</th></tr>
+            <tr><td>授業づくり</td><td>単元目標・児童の実態・導入・中心発問・活動・板書・評価・支援。</td></tr>
+            <tr><td>学級経営</td><td>学習・生活・人間関係・係や当番・行事・保護者連携・個別支援・学級の願い。</td></tr>
+            <tr><td>校務</td><td>議題・現状・資料・役割分担・期限・決定／未決定・次回まで。</td></tr>
+            <tr><td>企画</td><td>ねらい・対象・時間配分・体験や演習・資料や事例・留意点・役割・次の一手。</td></tr>
+            <tr><td>リフレクション</td><td>場面・子どもの姿・できたこと・難しかったこと・自分の関わり・気づき・次に試すこと・学びたいこと。</td></tr>
+            <tr><td>斜め上45°</td><td>あべこべにする・思いきり振り切る・いっそ無くす・よそのワザを盗む等、発想を飛ばす入口。</td></tr>
+            <tr><td>無地</td><td>ヒントを空のまま出す。その場で自分の言葉を8つ書いて表示。消すときにも使う。</td></tr>
+          </table>
+          <h4>パネルの操作</h4>
           <ul>
-            <li><span class="manual-term">授業づくり／学級経営／校務／企画</span>: 仕事の場面ごとに、考える入口の要素を並べます。</li>
-            <li><span class="manual-term">リフレクション</span>: 実践を振り返るための入口です。場面、子どもの姿、できたこと、難しかったこと、次に試すことなどで整理します。</li>
-            <li><span class="manual-term">斜め上45°</span>: 発想を飛ばすための入口です。あべこべにする、いっそ無くす、だれかになりきる、など、いつもと違う角度で考えます。</li>
-            <li><span class="manual-term">無地</span>: ヒントを空のまま出し、その場で自分の言葉を8つ書いて反映できます。最初から自由に作りたいときに使います。</li>
+            <li><span class="manual-term">表示</span>：選んだ型のヒントを番地の右に出す。書いても消えない。</li>
+            <li><span class="manual-term">候補の編集</span>：表示前に8つの候補をその場で書き換えられる。元の型は壊れない。</li>
+            <li><span class="manual-term">初期化</span>：編集した候補を、最初の提案に戻す。</li>
+            <li><span class="manual-term">消す</span>：「無地」を選んで「表示」を押すとヒントが消える。</li>
           </ul>
+          <div class="note">
+            <span class="label">ヒントは少なく・短く</span>
+            <p>ヒントは「答え」ではなく「考える入口」です。必要な型を1つ選び、自分の言葉に置き換えていくのがコツです。</p>
+          </div>
         </section>
         <section class="manual-section">
-          <h3>ヒントの表示・消し方</h3>
-          <p>「ヒント」パネルは画面の右に出るので、シートを見ながら型を選べます。番号は中央の上から時計回り（①→⑧）に対応し、候補の1番目が①に入ります。</p>
+          <h3>5. 使い分けの例</h3>
+          <table>
+            <tr><th>場面</th><th>大マンダラ</th><th>小マンダラでの深め方</th></tr>
+            <tr><td>授業づくり</td><td>「授業づくり」で単元の要素を並べる。</td><td>各入口を活動・対話・板書・支援へ具体化。</td></tr>
+            <tr><td>学級経営</td><td>「学級経営」で学級の柱を並べる。</td><td>困りごとや手立てを月・週の動きに落とす。</td></tr>
+            <tr><td>校務・会議</td><td>「校務」で議題と現状を並べる。</td><td>役割・期限・決定／未決定を整理。</td></tr>
+            <tr><td>研修・行事</td><td>「企画」でねらいと流れを並べる。</td><td>体験・資料・留意点・次の一手を具体化。</td></tr>
+            <tr><td>振り返り</td><td>「リフレクション」で事実と気づきを並べる。</td><td>意味づけ、次に試すこと、学びたいことへ。</td></tr>
+            <tr><td>行きづまり</td><td>「斜め上45°」で別角度から崩す。</td><td>逆・極端・削除・転用から違う一手を探す。</td></tr>
+          </table>
+          <div class="teacher">
+            <span class="label">チャンネルの活かし方</span>
+            <p>Aを本命、Bを試し書き、Cを別案、のように使うと、迷いを残したまま考えを進められます。切り替えてもそれぞれ自動保存されます。</p>
+          </div>
+        </section>
+        <section class="manual-section">
+          <h3>6. 配置換えと色での認知</h3>
+          <p>「配置換え」を押すと、大マンダラの入口や小マンダラ内のマスを入れ替えられます。ドラッグで動かすか、動かす元と先をクリックします。</p>
           <ul>
-            <li><span class="manual-term">表示</span>: 選んだ型のヒントを、周囲8マスのヒント箱に表示します。書いても残ります。</li>
-            <li><span class="manual-term">消す</span>: 「無地」を選んで「表示」を押すと、ヒントを消せます。</li>
-            <li><span class="manual-term">候補の編集</span>: 表示する前に8つの候補を書き換えられます。編集はその場だけで、定型候補そのものは壊れません。</li>
-            <li><span class="manual-term">初期化</span>: 編集した候補を、最初の提案に戻します。</li>
+            <li>番地「①」「①-1」は最初の場所を示す目印で、配置換えしても変わりません。</li>
+            <li>番号は中央の上から時計回り（①→⑧）に振られています。</li>
+            <li>白背景に色枠線なので、並べ替え中も「どの色のマスを動かしているか」を見失いません。</li>
           </ul>
+          <div class="tip">
+            <span class="label">構造をつくる順番の例</span>
+            <p>まず入口を思いつくまま書く → 9×9全体で眺める → 似たものを近くへ配置換え → 足りない観点を「ヒント」で補う。</p>
+          </div>
         </section>
         <section class="manual-section">
-          <h3>使い分けの例</h3>
-          <ul>
-            <li><span class="manual-term">授業づくり</span>: 右上の「ヒント」で「授業づくり」を選んで入口を出し、小マンダラで各入口を活動・対話・板書・支援などへ具体化します。</li>
-            <li><span class="manual-term">リフレクション</span>: 右上の「ヒント」で「リフレクション」を選び、小マンダラで事実、意味づけ、次の一手へと書き進めます。</li>
-            <li><span class="manual-term">斜め上45°</span>: 行きづまったら「斜め上45°」を選び、あえて真逆や極端から考えて、いつもと違う一手を見つけます。</li>
-            <li><span class="manual-term">自由に作る</span>: 型に縛られたくないときは「無地」を選び、その場で8つの入口を自分の言葉で書いて反映します。</li>
+          <h3>7. 保存と出力</h3>
+          <table>
+            <tr><th>機能</th><th>何をするか</th><th>使う場面</th></tr>
+            <tr><td>自動保存</td><td>同じ端末・ブラウザにチャンネルごとに自動保存。</td><td>前回の続きから。</td></tr>
+            <tr><td>ファイル保存</td><td>内容をJSONファイルに書き出す。</td><td>正式に残す・別端末へ移す。</td></tr>
+            <tr><td>ヒント保存</td><td>本文を空にしてヒント・配置・色だけを残す（_template.json）。</td><td>来年・別単元で使い回す。</td></tr>
+            <tr><td>読み込み</td><td>JSONを復元。テンプレートは本文空・ヒント入りで開く。スプシ貼り付けも。</td><td>続きを開く・型から始める。</td></tr>
+            <tr><td>スプシにコピー</td><td>9×9を表として貼り付けられる形でコピー。</td><td>スプレッドシートで共有・印刷。</td></tr>
+            <tr><td>箇条書きメモ化</td><td>入口を「1.」、その小マンダラを「・」にした箇条書きに。テーマが見出し、時計回り、空は省略。</td><td>授業案・通信・報告の下書きへ。</td></tr>
+            <tr><td>印刷</td><td>大マンダラ／いまの小マンダラ／9×9全体を選んで印刷。</td><td>紙で配る・手元に置く。</td></tr>
+          </table>
+          <div class="warn">
+            <span class="label">個人情報は書かない</span>
+            <ul>
+              <li>児童名・保護者名・成績・健康情報などはマスに書かない運用に。</li>
+              <li>保存ファイルや印刷物の取り扱いにも注意します。</li>
+              <li>共有・配布の前に、個人が特定される情報が残っていないか確認します。</li>
+            </ul>
+          </div>
+        </section>
+        <section class="manual-section">
+          <h3>8. 困ったとき</h3>
+          <table>
+            <tr><th>状態</th><th>確認</th><th>対応</th></tr>
+            <tr><td>続きが出てこない</td><td>同じ端末・ブラウザか。チャンネルはどれか。</td><td>自動保存は端末・ブラウザ単位。別端末は「ファイル保存」JSONを「読み込み」。</td></tr>
+            <tr><td>ヒントを消したい</td><td>「ヒント」を開いているか。</td><td>「無地」を選んで「表示」。</td></tr>
+            <tr><td>うっかり消した</td><td>直後か。</td><td>「戻す」で1つ前に（履歴は1つ）。</td></tr>
+            <tr><td>最初の状態に戻したい</td><td>全部消してよいか。</td><td>「初期化（最初の状態にもどす）」。</td></tr>
+            <tr><td>印刷で崩れる</td><td>印刷対象を選んだか。</td><td>「印刷」から対象を選ぶ。背景色は印刷設定の「背景のグラフィック」をオン。</td></tr>
+            <tr><td>GASで反映されない</td><td>再デプロイしたか。</td><td>Index.htmlを貼り替え、新バージョンとしてデプロイ。<code>&lt;base target="_top"&gt;</code> の行が必要。</td></tr>
+          </table>
+        </section>
+        <section class="manual-section">
+          <h3>9. 活用のコツ（チェックリスト）</h3>
+          <ul class="checklist">
+            <li>まずテーマを書いてから、必要なときだけ「ヒント」を出している。</li>
+            <li>ヒントを写さず、自分の言葉に置き換えている。</li>
+            <li>行きづまったら「斜め上45°」で別角度を試している。</li>
+            <li>9×9全体で眺めてから、配置換えで構造を整えている。</li>
+            <li>本命・試し書き・別案をチャンネルA・B・Cで分けている。</li>
+            <li>来年使い回したい型は「ヒント保存」で残している。</li>
+            <li>共有・印刷の前に、個人情報が残っていないか確認している。</li>
           </ul>
-        </section>
-        <section class="manual-section">
-          <h3>配置換えと元番地</h3>
-          <p>「配置換え」を押すと、大マンダラの入口や小マンダラ内セルを入れ替えられます。ドラッグで動かすか、移動元と移動先をクリックします。元番地の「①」「①-1」などは、最初の場所を示す目印です。番号は中央の上から時計回り（①→⑧）に振られていて、配置換えをしても変わりません。</p>
-        </section>
-        <section class="manual-section">
-          <h3>画面と編集</h3>
-          <ul>
-            <li><span class="manual-term">3×3編集</span>: 大マンダラや小マンダラを1つずつ考える画面です。構造づくりと配置換えに向いています。</li>
-            <li><span class="manual-term">9×9全体</span>: 全体を俯瞰する画面です。大きな入力より、確認や微修正に向いています。</li>
-            <li><span class="manual-term">戻す / 進む</span>: 直前の変更を1つだけ戻す・進める機能です。長い履歴は保存しません。</li>
-            <li><span class="manual-term">進み具合とパンくず</span>: 上部に「テーマ→入口→各マス」の進み具合と、いま見ている場所（大マンダラ／小マンダラ）が表示されます。</li>
-          </ul>
-        </section>
-        <section class="manual-section">
-          <h3>保存と出力</h3>
-          <ul>
-            <li><span class="manual-term">自動保存</span>: 同じ端末・同じブラウザでは、前回の続きから始められます。これは一時的な保険です。</li>
-            <li><span class="manual-term">ファイル保存</span>: 正式に残すときに使います。JSONファイルとして保存し、読み込みから復元できます。</li>
-            <li><span class="manual-term">ヒント保存</span>: 本文を空にして、ヒント・配置・色だけを残して保存します（_template.json）。来年や別単元で同じ枠組みを使い回せます。</li>
-            <li><span class="manual-term">読み込み</span>: JSONは配置やヒントまで復元します。テンプレート（_template.json）を選ぶと、本文は空・ヒント入りの新しいシートとして始まります。スプシ貼り付けは、表に見えている9×9の文字を取り込みます。</li>
-            <li><span class="manual-term">スプシにコピー</span>: 印刷・共有の主ルートです。GoogleスプレッドシートのA1セルへ貼り付けて整えます。</li>
-            <li><span class="manual-term">箇条書きメモ化</span>: 大マンダラの入口を「1.」、その小マンダラのセルを「・」にした箇条書きのアウトラインを作ります。中央テーマが見出しになり、番地どおり時計回り、空のマスは省略。パネルで確認して「コピー」できます。</li>
-            <li><span class="manual-term">印刷</span>: 大マンダラだけ、小マンダラだけ、9×9全体を選んで直接印刷できます。ブラウザ印刷は補助機能です。</li>
-          </ul>
-        </section>
-        <section class="manual-section">
-          <h3>3つのチャンネル（A・B・C）</h3>
-          <p>右上の「チャンネル」で、A・B・Cの3つのマンダラを切り替えて使えます。それぞれが自動保存されるので、保存し直す必要はありません。本命をA、試し書きや別案をB・Cに、というように使い分けられます。切り替えても、それぞれの内容はそのまま残ります。1台のブラウザの中だけの保存なので、正式に残すときは「ファイル保存」も使ってください。</p>
-        </section>
-        <section class="manual-section">
-          <h3>迷ったとき</h3>
-          <ul>
-            <li>最初から自由に作りたいときは、右上の「ヒント」で「無地」を選んで「表示」を押します。</li>
-            <li>ヒントが気になるときは、「無地」を表示すればヒントを消せます。</li>
-            <li>本文に何を書くか迷ったら、ヒントをそのまま写さず、「自分の言葉ならどう言うか」を考えます。</li>
-            <li>全体が散らかったら、9×9全体で眺めてから、3×3編集に戻って配置換えします。</li>
-          </ul>
+          <div class="teacher">
+            <span class="label">うまくいっている状態</span>
+            <p>マスが全部埋まることがゴールではありません。考えが少し進んだ、次の一手が見えた、ばらばらだった考えに筋が通った。そう感じられたら、このアプリはうまく働いています。</p>
+          </div>
         </section>
       </div>
     </div>
   </div>
 
-  <div class="manual-overlay guide-overlay" id="guidePanel" role="dialog" aria-labelledby="guideTitle">
+  <div class="manual-overlay guide-overlay" id="guidePanel" role="dialog" aria-labelledby="guideTitle" hidden>
     <div class="manual-dialog">
       <div class="manual-head">
         <h2 id="guideTitle">ガイド</h2>
@@ -1401,7 +1646,7 @@
     </div>
   </div>
 
-  <div class="manual-overlay" id="printPanel" role="dialog" aria-modal="true" aria-labelledby="printTitle">
+  <div class="manual-overlay" id="printPanel" role="dialog" aria-modal="true" aria-labelledby="printTitle" hidden>
     <div class="manual-dialog">
       <div class="manual-head">
         <h2 id="printTitle">印刷するものを選ぶ</h2>
@@ -1421,7 +1666,7 @@
     </div>
   </div>
 
-  <div class="manual-overlay" id="outlinePanel" role="dialog" aria-modal="true" aria-labelledby="outlineTitle">
+  <div class="manual-overlay" id="outlinePanel" role="dialog" aria-modal="true" aria-labelledby="outlineTitle" hidden>
     <div class="manual-dialog">
       <div class="manual-head">
         <h2 id="outlineTitle">箇条書きメモ</h2>
