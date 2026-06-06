@@ -825,6 +825,22 @@
       gap: 8px;
     }
 
+    .outline-text {
+      width: 100%;
+      min-height: 300px;
+      margin-top: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      resize: vertical;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     .guide-preview {
       margin: 0;
       padding: 0;
@@ -1175,6 +1191,7 @@
       <div class="tool-group" aria-label="出力">
         <span class="tool-label">出力</span>
         <button class="btn primary" id="copySheetBtn" type="button" data-tooltip="Googleスプレッドシートに貼れる形でコピーします。">スプシにコピー</button>
+        <button class="btn" id="outlineBtn" type="button" data-tooltip="大マンダラの入口と小マンダラのセルを、箇条書きのアウトラインにします。">箇条書きメモ化</button>
         <button class="btn" id="printBtn" type="button" data-tooltip="大マンダラ・小マンダラ・9×9全体から対象を選んで印刷します。">印刷</button>
       </div>
       <div class="tool-group" aria-label="保存と管理">
@@ -1335,6 +1352,7 @@
             <li><span class="manual-term">ヒント保存</span>: 本文を空にして、ヒント・配置・色だけを残して保存します（_template.json）。来年や別単元で同じ枠組みを使い回せます。</li>
             <li><span class="manual-term">読み込み</span>: JSONは配置やヒントまで復元します。テンプレート（_template.json）を選ぶと、本文は空・ヒント入りの新しいシートとして始まります。スプシ貼り付けは、表に見えている9×9の文字を取り込みます。</li>
             <li><span class="manual-term">スプシにコピー</span>: 印刷・共有の主ルートです。GoogleスプレッドシートのA1セルへ貼り付けて整えます。</li>
+            <li><span class="manual-term">箇条書きメモ化</span>: 大マンダラの入口を「1.」、その小マンダラのセルを「・」にした箇条書きのアウトラインを作ります。中央テーマが見出しになり、番地どおり時計回り、空のマスは省略。パネルで確認して「コピー」できます。</li>
             <li><span class="manual-term">印刷</span>: 大マンダラだけ、小マンダラだけ、9×9全体を選んで直接印刷できます。ブラウザ印刷は補助機能です。</li>
           </ul>
         </section>
@@ -1398,6 +1416,24 @@
             <button class="btn primary" id="printWholeBtn" type="button" data-tooltip="9×9の全体を印刷します。">9×9全体</button>
           </div>
           <p class="guide-note" id="printNote">ブラウザ印刷は補助機能です。配布・共有には「スプシにコピー」も使えます。</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="manual-overlay" id="outlinePanel" role="dialog" aria-modal="true" aria-labelledby="outlineTitle">
+    <div class="manual-dialog">
+      <div class="manual-head">
+        <h2 id="outlineTitle">箇条書きメモ</h2>
+        <button class="btn" id="outlineCloseBtn" type="button" data-tooltip="箇条書きメモを閉じます。">閉じる</button>
+      </div>
+      <div class="manual-body">
+        <section class="manual-section">
+          <p class="guide-note">大マンダラの入口を「1.」、その小マンダラのセルを「・」で箇条書きにしました。番地どおり時計回りで、空のマスは省いています。</p>
+          <textarea id="outlineText" class="outline-text" readonly aria-label="箇条書きメモ"></textarea>
+          <div class="guide-actions">
+            <button class="btn primary" id="outlineCopyBtn" type="button" data-tooltip="箇条書きメモをクリップボードにコピーします。">コピー</button>
+          </div>
         </section>
       </div>
     </div>
@@ -1540,6 +1576,11 @@
       printSmallBtn: document.getElementById("printSmallBtn"),
       printWholeBtn: document.getElementById("printWholeBtn"),
       printNote: document.getElementById("printNote"),
+      outlineBtn: document.getElementById("outlineBtn"),
+      outlinePanel: document.getElementById("outlinePanel"),
+      outlineText: document.getElementById("outlineText"),
+      outlineCopyBtn: document.getElementById("outlineCopyBtn"),
+      outlineCloseBtn: document.getElementById("outlineCloseBtn"),
       toast: document.getElementById("toast")
     };
 
@@ -2793,6 +2834,49 @@
       });
     }
 
+    // 大マンダラの入口（第1階層・連番）と小マンダラのセル（第2階層・「・」）を、
+    // 番地どおり時計回りでアウトライン化する。空のマスは省略。中央テーマは見出し。
+    function buildOutline() {
+      const lines = [];
+      const theme = (data.centerTheme.title || "").trim();
+      if (theme) {
+        lines.push(theme);
+        lines.push("");
+      }
+      let n = 0;
+      CLOCKWISE_POSITIONS.forEach(position => {
+        const block = data.blocks[data.blockLayout[position]];
+        if (!block) return;
+        const title = (block.title || "").trim();
+        if (!title) return;                       // 空の入口は配下ごと省略
+        n += 1;
+        lines.push(`${n}. ${title}`);
+        CLOCKWISE_POSITIONS.forEach(cellPosition => {
+          const cell = block.cells[block.cellLayout[cellPosition]];
+          if (!cell) return;
+          const text = (cell.title || "").trim();
+          if (!text) return;                      // 空のセルは省略
+          lines.push(`  ・${text}`);
+        });
+      });
+      return lines.join("\n");
+    }
+
+    function openOutlinePanel() {
+      const text = buildOutline();
+      if (!text.trim()) {
+        showToast("箇条書きにする内容がまだありません");
+        return;
+      }
+      els.outlineText.value = text;
+      els.outlinePanel.classList.add("open");
+      els.outlineCopyBtn.focus();
+    }
+
+    function closeOutlinePanel() {
+      els.outlinePanel.classList.remove("open");
+    }
+
     function openPrintPanel() {
       els.printSmallBtn.disabled = !(ui.mode === "structure" && ui.activeView === "small" && ui.activeBlockId);
       els.printNote.textContent = els.printSmallBtn.disabled
@@ -2990,6 +3074,21 @@
     els.guidePanel.addEventListener("click", event => {
       if (event.target === els.guidePanel) closeGuide();
     });
+    els.outlineBtn.addEventListener("click", openOutlinePanel);
+    els.outlineCloseBtn.addEventListener("click", closeOutlinePanel);
+    els.outlineCopyBtn.addEventListener("click", async () => {
+      try {
+        await copyText(els.outlineText.value);
+        showToast("箇条書きメモをコピーしました");
+      } catch (error) {
+        els.outlineText.focus();
+        els.outlineText.select();
+        showToast("コピーできませんでした。選択してコピーしてください");
+      }
+    });
+    els.outlinePanel.addEventListener("click", event => {
+      if (event.target === els.outlinePanel) closeOutlinePanel();
+    });
     els.printCloseBtn.addEventListener("click", closePrintPanel);
     els.printBigBtn.addEventListener("click", () => printSheet("big"));
     els.printSmallBtn.addEventListener("click", () => printSheet("small"));
@@ -3031,6 +3130,7 @@
       if (event.key === "Escape" && els.manualPanel.classList.contains("open")) closeManual();
       if (event.key === "Escape" && els.guidePanel.classList.contains("open")) closeGuide();
       if (event.key === "Escape" && els.printPanel.classList.contains("open")) closePrintPanel();
+      if (event.key === "Escape" && els.outlinePanel.classList.contains("open")) closeOutlinePanel();
       const isModifier = event.ctrlKey || event.metaKey;
       if (!isModifier) return;
       const key = event.key.toLowerCase();
