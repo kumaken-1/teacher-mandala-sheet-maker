@@ -323,7 +323,7 @@
     .tile {
       position: relative;
       aspect-ratio: 1 / 1;
-      border: 1px solid var(--line);
+      border: 2px solid var(--line);
       border-radius: 8px;
       background: #fff;
       padding: 8px;
@@ -349,7 +349,7 @@
       left: 8px;
       max-width: calc(100% - 16px);
       border-radius: 6px;
-      background: rgba(255,255,255,.86);
+      background: transparent;
       color: #25312c;
       padding: 3px 6px;
       font-size: 11px;
@@ -371,7 +371,6 @@
 
     .tile.theme .tile-id,
     .tile.block .tile-id {
-      background: rgba(255,255,255,.9);
       color: #25312c;
     }
 
@@ -379,37 +378,36 @@
       color: #25312c;
     }
 
-    /* ヒント箱：本文欄の上に常時表示。書いても消えない（児童用に準じる）。 */
+    /* ヒントは番地表示の右側に薄く出す（本文には入れない）。 */
     .tile-hint {
-      align-self: stretch;
-      margin: 0 2px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, .88);
-      color: #25312c;
-      padding: 3px 6px;
-      font-size: 11px;
-      font-weight: 700;
-      line-height: 1.35;
-      white-space: normal;
-      word-break: break-word;
-      pointer-events: none;
+      margin-left: 5px;
+      color: #4f5d56;
+      font-size: 10px;
+      font-weight: 800;
+      opacity: .7;
     }
 
+    .tile.theme .tile-hint,
+    .tile.block .tile-hint {
+      color: #25312c;
+    }
+
+    /* 全セルは白背景。枠線をそのセルの色にして、並び替え時に色で見分けやすくする。 */
     .tile.theme {
-      background: var(--primary);
+      background: #fff;
       border-color: var(--primary);
-      color: #fff;
+      color: var(--text);
     }
 
     .tile.block {
-      background: var(--block-color, var(--primary-soft));
-      border-color: var(--block-border, #9cc8bd);
-      color: #fff;
+      background: #fff;
+      border-color: var(--block-color, #9cc8bd);
+      color: var(--text);
     }
 
     .tile.cell {
-      background: var(--block-soft, #fffef8);
-      border-color: var(--block-border, var(--line));
+      background: #fff;
+      border-color: var(--block-color, var(--line));
     }
 
     .tile.selected {
@@ -426,7 +424,6 @@
       cursor: grab;
       touch-action: none;
       user-select: none;
-      border-color: #c98745;
       box-shadow: inset 0 0 0 2px rgba(164, 95, 42, .18);
     }
 
@@ -463,20 +460,9 @@
       font-weight: 800;
     }
 
-    .tile.theme textarea {
-      color: #fff;
-    }
-
+    .tile.theme textarea,
     .tile.block textarea {
-      color: #fff;
-    }
-
-    .tile.theme textarea::placeholder {
-      color: rgba(255,255,255,.72);
-    }
-
-    .tile.block textarea::placeholder {
-      color: rgba(255,255,255,.76);
+      color: var(--text);
     }
 
     .tile-actions {
@@ -1933,7 +1919,6 @@
         renderSteps();
         renderBreadcrumb();
       });
-      appendHintBox(tile, item);
       tile.appendChild(input);
       appendIdentityBadge(tile, item);
 
@@ -2032,16 +2017,14 @@
         count.textContent = `${item.filledCount}/8`;
         badge.appendChild(count);
       }
+      // ヒントは番地表示の右側に出す。セル本体には書かない。
+      if (item.hint && item.hint.trim()) {
+        const hint = document.createElement("span");
+        hint.className = "tile-hint";
+        hint.textContent = item.hint;
+        badge.appendChild(hint);
+      }
       tile.appendChild(badge);
-    }
-
-    // ヒントは「ヒント箱」として本文欄の上に常時表示する（児童用に準じる）。書いても消えない。
-    function appendHintBox(tile, item) {
-      if (!item.hint || !item.hint.trim()) return;
-      const box = document.createElement("span");
-      box.className = "tile-hint";
-      box.textContent = item.hint;
-      tile.appendChild(box);
     }
 
     function applyPalette(tile, item) {
@@ -2052,16 +2035,9 @@
       tile.style.setProperty("--block-ring", item.palette.ring);
     }
 
-    function defaultPlaceholder(kind) {
-      if (kind === "theme") return "考えたいテーマを書く";
-      if (kind === "block") return "考えの入口を書く";
-      if (kind === "cell") return "思いついたことを書く";
-      return "";
-    }
-
     function placeholderFor(item) {
-      // ヒントはセル内の「ヒント箱」に常時表示する。プレースホルダーは書き込みを促す文。
-      return defaultPlaceholder(item.kind);
+      // セルは真っ白に保つ（埋めたくなるように）。プレースホルダー文字は置かない。
+      return "";
     }
 
     function handleTileClick(item) {
