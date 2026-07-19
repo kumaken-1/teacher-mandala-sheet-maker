@@ -150,6 +150,14 @@
       opacity: 1;
     }
 
+    /* タッチ端末（hoverなし）では、タップで居座る吹き出しツールチップを出さない */
+    @media (hover: none) {
+      .btn[data-tooltip]::after,
+      .btn[data-tooltip]::before {
+        display: none !important;
+      }
+    }
+
     .app-header .btn[data-tooltip]::after {
       top: calc(100% + 8px);
       bottom: auto;
@@ -195,6 +203,22 @@
       background: var(--accent);
       border-color: var(--accent);
       color: #fff;
+    }
+
+    /* 中身があるチャンネルに付く小さな点 */
+    .channel-btn .ch-dot {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      pointer-events: none;
+    }
+
+    .channel-btn.active .ch-dot {
+      background: #fff;
     }
 
     .btn:disabled {
@@ -318,6 +342,11 @@
       grid-template-columns: repeat(9, minmax(0, 1fr));
       gap: 3px;
       width: min(100%, 980px);
+    }
+
+    /* 9×9などが画面幅を超えるときだけ横スクロールする入れ物。PCでは影響なし。 */
+    .grid-scroll {
+      overflow-x: auto;
     }
 
     .tile {
@@ -1093,19 +1122,35 @@
         align-items: stretch;
       }
 
+      .app-header {
+        padding: 8px 12px;
+        gap: 8px;
+      }
+
+      /* ヘッダーをコンパクトに：サブ見出しとカテゴリ名を隠し、ボタンを詰める */
+      .brand { min-width: 0; }
+      .brand strong { font-size: 16px; }
+      .brand span { display: none; }
+
       .shell {
         padding: 10px;
       }
 
       .toolbar {
         justify-content: flex-start;
+        gap: 6px;
       }
 
+      .tool-label { display: none; }
+
       .tool-group {
-        width: 100%;
-        justify-content: flex-start;
         padding-left: 0;
         border-left: 0;
+        gap: 6px;
+      }
+
+      .btn {
+        min-height: 40px;
       }
 
       .tile {
@@ -1117,13 +1162,21 @@
         min-height: 108px;
       }
 
+      /* セル本文は16px：iOSでタップしてもページが自動ズームしない（9×9は別ルールで小さいまま） */
       .tile textarea {
         padding: 4px;
-        font-size: 12px;
+        font-size: 16px;
       }
 
       .grid.nine .tile:focus-within {
         transform: scale(1.22);
+      }
+
+      /* 9×9は潰さず、横スクロールで見る（1マス約76px） */
+      .grid.nine {
+        width: 684px;
+        max-width: none;
+        margin: 0;
       }
 
       .guide-preview {
@@ -1333,16 +1386,10 @@
         <button class="btn" id="undoBtn" type="button" disabled data-tooltip="直前の変更を1つだけ戻します。">戻す</button>
         <button class="btn" id="redoBtn" type="button" disabled data-tooltip="戻した直後の変更を1つだけ進めます。">進む</button>
       </div>
-      <div class="tool-group" aria-label="出力">
-        <span class="tool-label">出力</span>
+      <div class="tool-group" aria-label="出力・保存">
+        <span class="tool-label">出力・保存</span>
         <button class="btn primary" id="copySheetBtn" type="button" data-tooltip="Googleスプレッドシートに貼れる形でコピーします。">スプシにコピー</button>
-        <button class="btn" id="outlineBtn" type="button" data-tooltip="大マンダラの入口と小マンダラのセルを、箇条書きのアウトラインにします。">箇条書きメモ化</button>
-        <button class="btn" id="printBtn" type="button" data-tooltip="大マンダラ・小マンダラ・9×9全体から対象を選んで印刷します。">印刷</button>
-      </div>
-      <div class="tool-group" aria-label="保存と管理">
-        <span class="tool-label">保存</span>
-        <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
-        <button class="btn" id="resetBtn" type="button" data-tooltip="マンダラを全部消して、まっさらにします（確認2回）。">初期化（最初の状態にもどす）</button>
+        <button class="btn" id="moreBtn" type="button" data-tooltip="印刷・箇条書きメモ化・ファイル保存・すべて保存・初期化をまとめて開きます。">保存・出力 ▾</button>
       </div>
       <div class="tool-group" aria-label="ヘルプ">
         <span class="tool-label">ヘルプ</span>
@@ -1385,7 +1432,9 @@
           </div>
         </div>
         <div class="arrange-banner" id="arrangeStatus" role="status" aria-live="polite"></div>
-        <div id="grid" class="grid three"></div>
+        <div class="grid-scroll">
+          <div id="grid" class="grid three"></div>
+        </div>
       </div>
     </section>
 
@@ -1542,7 +1591,7 @@
           </table>
           <div class="teacher">
             <span class="label">チャンネルの活かし方</span>
-            <p>Aを本命、Bを試し書き、Cを別案、のように使うと、迷いを残したまま考えを進められます。切り替えてもそれぞれ自動保存されます。</p>
+            <p>Aを本命、Bを試し書き、Cを別案、のように使うと、迷いを残したまま考えを進められます。切り替えてもそれぞれ自動保存されます。中身があるチャンネルにはボタンに小さな点が付き、マウスを乗せるとテーマが見えます。まとめて残したいときは「すべて保存」で3つを1つのJSONにバックアップできます。</p>
           </div>
         </section>
         <section class="manual-section">
@@ -1560,10 +1609,12 @@
         </section>
         <section class="manual-section">
           <h3>7. 保存と出力</h3>
+          <p>「スプシにコピー」はツールバーに、印刷・箇条書きメモ化・ファイル保存・すべて保存・初期化はツールバーの「保存・出力」ボタンにまとまっています。</p>
           <table>
             <tr><th>機能</th><th>何をするか</th><th>使う場面</th></tr>
             <tr><td>自動保存</td><td>同じ端末・ブラウザにチャンネルごとに自動保存。</td><td>前回の続きから。</td></tr>
             <tr><td>ファイル保存</td><td>内容をJSONファイルに書き出す。</td><td>正式に残す・別端末へ移す。</td></tr>
+            <tr><td>すべて保存</td><td>A・B・Cの3チャンネルをまとめて1つのJSONに書き出す。「読み込み」から3つとも復元できる。</td><td>学期末などのバックアップ・端末の引っ越し。</td></tr>
             <tr><td>ヒント保存（ヒントパネル内）</td><td>本文を空にしてヒント・配置・色だけを残す（_template.json）。</td><td>来年・別単元で使い回す。</td></tr>
             <tr><td>読み込み</td><td>JSONを復元。テンプレートは本文空・ヒント入りで開く。スプシ貼り付けも。</td><td>続きを開く・型から始める。</td></tr>
             <tr><td>スプシにコピー</td><td>9×9を表として貼り付けられる形でコピー。</td><td>スプレッドシートで共有・印刷。</td></tr>
@@ -1676,6 +1727,37 @@
     </div>
   </div>
 
+  <div class="manual-overlay" id="moreMenuPanel" role="dialog" aria-modal="true" aria-labelledby="moreMenuTitle" hidden>
+    <div class="manual-dialog">
+      <div class="manual-head">
+        <h2 id="moreMenuTitle">保存・出力</h2>
+        <button class="btn" id="moreMenuCloseBtn" type="button" data-tooltip="閉じます。">閉じる</button>
+      </div>
+      <div class="manual-body">
+        <section class="manual-section">
+          <h3>出力</h3>
+          <div class="guide-actions">
+            <button class="btn" id="outlineBtn" type="button" data-tooltip="大マンダラの入口と小マンダラのセルを、箇条書きのアウトラインにします。">箇条書きメモ化</button>
+            <button class="btn" id="printBtn" type="button" data-tooltip="大マンダラ・小マンダラ・9×9全体から対象を選んで印刷します。">印刷</button>
+          </div>
+        </section>
+        <section class="manual-section">
+          <h3>保存</h3>
+          <div class="guide-actions">
+            <button class="btn" id="exportJsonBtn" type="button" data-tooltip="入力内容と配置をJSONファイルとして保存します。">ファイル保存</button>
+            <button class="btn" id="exportAllBtn" type="button" data-tooltip="A・B・Cの3チャンネルをまとめて1つのJSONに保存します。バックアップ用。読み込みから3つとも復元できます。">すべて保存</button>
+          </div>
+        </section>
+        <section class="manual-section">
+          <h3>やり直し</h3>
+          <div class="guide-actions">
+            <button class="btn" id="resetBtn" type="button" data-tooltip="マンダラを全部消して、まっさらにします（確認2回）。">初期化（最初の状態にもどす）</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
   <script>
     const STORAGE_KEY = "teacher_mandala_state_v1";
     // 3つのチャンネル（A・B・C）。それぞれ独立に自動保存される。Aは既存キーを引き継ぐ。
@@ -1769,6 +1851,7 @@
       arrangeBtn: document.getElementById("arrangeBtn"),
       copySheetBtn: document.getElementById("copySheetBtn"),
       exportJsonBtn: document.getElementById("exportJsonBtn"),
+      exportAllBtn: document.getElementById("exportAllBtn"),
       printBtn: document.getElementById("printBtn"),
       manualBtn: document.getElementById("manualBtn"),
       backBtn: document.getElementById("backBtn"),
@@ -1818,6 +1901,9 @@
       outlineText: document.getElementById("outlineText"),
       outlineCopyBtn: document.getElementById("outlineCopyBtn"),
       outlineCloseBtn: document.getElementById("outlineCloseBtn"),
+      moreBtn: document.getElementById("moreBtn"),
+      moreMenuPanel: document.getElementById("moreMenuPanel"),
+      moreMenuCloseBtn: document.getElementById("moreMenuCloseBtn"),
       toast: document.getElementById("toast")
     };
 
@@ -1976,14 +2062,78 @@
       data.updatedAt = new Date().toISOString();
       localStorage.setItem(CHANNEL_STORAGE[currentChannel], JSON.stringify(data));
       renderProgress();
+      renderChannelBar();
       if (!silent) showToast("保存しました");
+    }
+
+    // シートに何か書かれているか（本文・ヒントのどれか）
+    function sheetHasContent(target) {
+      if (!target || !target.centerTheme || !target.blocks) return false;
+      if ((target.centerTheme.title || "").trim() || (target.centerTheme.note || "").trim()) return true;
+      return Object.values(target.blocks).some(block => {
+        if ((block.title || "").trim() || (block.note || "").trim() || (block.hint || "").trim()) return true;
+        return Object.values(block.cells || {}).some(cell =>
+          (cell.title || "").trim() || (cell.note || "").trim() || (cell.hint || "").trim());
+      });
+    }
+
+    // 各チャンネルの中身を覗く（現在のチャンネルはメモリ上の data を見る）
+    function channelSummary(channel) {
+      try {
+        const source = channel === currentChannel
+          ? data
+          : JSON.parse(localStorage.getItem(CHANNEL_STORAGE[channel]) || "null");
+        if (!source) return { hasContent: false, theme: "" };
+        return {
+          hasContent: sheetHasContent(source),
+          theme: ((source.centerTheme && source.centerTheme.title) || "").trim()
+        };
+      } catch (e) {
+        return { hasContent: false, theme: "" };
+      }
     }
 
     function renderChannelBar() {
       CHANNELS.forEach(channel => {
         const btn = els["chBtn" + channel];
-        if (btn) btn.classList.toggle("active", channel === currentChannel);
+        if (!btn) return;
+        btn.classList.toggle("active", channel === currentChannel);
+        const info = channelSummary(channel);
+        let dot = btn.querySelector(".ch-dot");
+        if (info.hasContent && !dot) {
+          dot = document.createElement("span");
+          dot.className = "ch-dot";
+          btn.appendChild(dot);
+        } else if (!info.hasContent && dot) {
+          dot.remove();
+        }
+        const state = info.theme ? `「${info.theme}」` : (info.hasContent ? "書きかけがあります" : "まだ空です");
+        btn.dataset.tooltip = `チャンネル${channel}：${state}。それぞれ自動保存されます。`;
       });
+    }
+
+    // 3チャンネルまとめてバックアップ（A・B・Cを1つのJSONに）
+    function exportAllChannels() {
+      saveNow(true);
+      const channels = {};
+      CHANNELS.forEach(channel => {
+        if (channel === currentChannel) { channels[channel] = data; return; }
+        try {
+          const raw = localStorage.getItem(CHANNEL_STORAGE[channel]);
+          channels[channel] = raw ? JSON.parse(raw) : null;
+        } catch (e) { channels[channel] = null; }
+      });
+      const payload = {
+        app: "mandala-planner",
+        allChannels: true,
+        backupVersion: 1,
+        currentChannel,
+        exportedAt: new Date().toISOString(),
+        channels
+      };
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadJsonFile(payload, `マンダラ全チャンネル_${stamp}.json`);
+      showToast("A・B・Cの3チャンネルをまとめて保存しました");
     }
 
     function switchChannel(channel) {
@@ -2886,6 +3036,31 @@
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
+
+          // 一括バックアップ（すべて保存）の復元：A・B・Cをまとめて書き戻す
+          if (parsed && parsed.allChannels === true && parsed.channels) {
+            const ok = confirm("3チャンネル（A・B・C）をまとめて復元します。今のA・B・Cの内容はすべて置きかわります。よろしいですか。");
+            if (!ok) return;
+            CHANNELS.forEach(channel => {
+              const channelData = parsed.channels[channel];
+              if (channelData) {
+                localStorage.setItem(CHANNEL_STORAGE[channel], JSON.stringify(normalizeData(channelData)));
+              } else {
+                localStorage.removeItem(CHANNEL_STORAGE[channel]);
+              }
+            });
+            currentChannel = CHANNELS.includes(parsed.currentChannel) ? parsed.currentChannel : "A";
+            try { localStorage.setItem(CHANNEL_KEY, currentChannel); } catch (e) {}
+            data = loadData();
+            ui = createUiState();
+            undoSnapshot = null;
+            redoSnapshot = null;
+            render();
+            renderChannelBar();
+            showToast(`3チャンネルを復元しました（チャンネル${currentChannel}を表示中）`);
+            return;
+          }
+
           const isTemplate = parsed && parsed.mandalaTemplate === true;
           rememberDataChange();
           data = normalizeData(parsed);
@@ -3116,6 +3291,15 @@
       els.outlinePanel.classList.remove("open");
     }
 
+    function openMoreMenu() {
+      els.moreMenuPanel.classList.add("open");
+      els.moreMenuCloseBtn.focus();
+    }
+
+    function closeMoreMenu() {
+      els.moreMenuPanel.classList.remove("open");
+    }
+
     function openPrintPanel() {
       els.printSmallBtn.disabled = !(ui.mode === "structure" && ui.activeView === "small" && ui.activeBlockId);
       els.printNote.textContent = els.printSmallBtn.disabled
@@ -3302,6 +3486,7 @@
     });
     els.copySheetBtn.addEventListener("click", copyForSheet);
     els.exportJsonBtn.addEventListener("click", exportJson);
+    els.exportAllBtn.addEventListener("click", exportAllChannels);
     els.printBtn.addEventListener("click", openPrintPanel);
     els.manualBtn.addEventListener("click", openManual);
     els.manualCloseBtn.addEventListener("click", closeManual);
@@ -3329,6 +3514,12 @@
     });
     els.outlinePanel.addEventListener("click", event => {
       if (event.target === els.outlinePanel) closeOutlinePanel();
+    });
+    els.moreBtn.addEventListener("click", openMoreMenu);
+    els.moreMenuCloseBtn.addEventListener("click", closeMoreMenu);
+    els.moreMenuPanel.addEventListener("click", event => {
+      if (event.target === els.moreMenuPanel) return closeMoreMenu();          // 背景クリックで閉じる
+      if (event.target.closest(".guide-actions button")) closeMoreMenu();      // 項目を選んだらメニューは閉じる（印刷等の小パネルが前面に出る）
     });
     els.printCloseBtn.addEventListener("click", closePrintPanel);
     els.printBigBtn.addEventListener("click", () => printSheet("big"));
@@ -3372,6 +3563,7 @@
       if (event.key === "Escape" && els.guidePanel.classList.contains("open")) closeGuide();
       if (event.key === "Escape" && els.printPanel.classList.contains("open")) closePrintPanel();
       if (event.key === "Escape" && els.outlinePanel.classList.contains("open")) closeOutlinePanel();
+      if (event.key === "Escape" && els.moreMenuPanel.classList.contains("open")) closeMoreMenu();
       const isModifier = event.ctrlKey || event.metaKey;
       if (!isModifier) return;
       const key = event.key.toLowerCase();
